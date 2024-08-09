@@ -25,7 +25,7 @@ This tool is designed to automatically ban users from a specified VRChat group b
 Prepare your user data files:
 
 `crashers.json`: A JSON file exported from VRCX containing user data.
-`cracher_id_dump_from_DCN.txt`: A plain text file with comma-separated user IDs.
+`crasher_id_dump.txt`: A plain text file with comma-separated user IDs.
 
 ## Usage
 Run the script:
