@@ -153,7 +153,7 @@ def main():
     # Construct the full paths to the config and users files
     CONFIG_FILE = os.path.join(script_dir, 'config.json')
     USERS_FILE = os.path.join(script_dir, 'crashers.json')
-    TEXT_USERS_FILE = os.path.join(script_dir, 'cracher_id_dump_from_DCN.txt')
+    TEXT_USERS_FILE = os.path.join(script_dir, 'crasher_id_dump.txt')
 
     API_RATE_LIMIT = 60  # seconds
 
