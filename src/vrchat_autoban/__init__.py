@@ -114,7 +114,7 @@ class VRChatAPI:
             password=password,
         )
         self.api_client = vrchatapi.ApiClient(self.configuration)
-        self.api_client.user_agent = "VRChatGroupBannerScript/1.0 (https://github.com/yourusername/your-repo)"
+        self.api_client.user_agent = "VRChatGroupBannerScript/1.0 (https://github.com/Amoenus/vrchat_autoban)"
         self.authenticator = VRChatAuthenticator(self.api_client)
         self.banner = GroupBanner(self.api_client)
 
