@@ -1,0 +1,13 @@
+# python generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# venv
+.venv
+src/vrchat_autoban/config.json
+src/vrchat_autoban/crashers.json
+src/vrchat_autoban/crasher_id_dump_from_DCN.txt
