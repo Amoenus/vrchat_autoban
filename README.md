@@ -1,7 +1,5 @@
 # VRChat Group Auto-Ban Tool
 
-# VRChat Group Auto-Ban Tool
-
 ## Description
 
 The VRChat Group Auto-Ban Tool is designed to assist VRChat group moderators in efficiently managing large-scale banning operations. Its primary purpose is to automate the process of banning multiple users from a specified VRChat group, particularly useful when dealing with spam accounts, malicious users, or cleaning up after a major incident.
