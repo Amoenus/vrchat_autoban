@@ -1,18 +1,17 @@
 import os
+from typing import List, Tuple
 
 from loguru import logger
 from tqdm import tqdm
-from typing import List, Tuple
-from vrchatapi.api import authentication_api, groups_api
 import vrchatapi
-from loguru import logger
+from vrchatapi.api import authentication_api, groups_api
 import pendulum
-from tqdm import tqdm
 
 from vrchat_autoban.api.authenticator import VRChatAuthenticator
 from vrchat_autoban.api.moderator import VRChatGroupModerator
 from vrchat_autoban.api.vrchat_api import VRChatAPI
 from vrchat_autoban.config import Config
+from vrchat_autoban.data.json_user_loader import JSONUserLoader
 from vrchat_autoban.data.processed_user_tracker import ProcessedUserTracker
 from vrchat_autoban.data.user_loader import TextUserLoader
 from vrchat_autoban.models.ban_status import BanStatus
@@ -60,18 +59,18 @@ async def run_moderation(
         ban_status = await api.ban_user_from_group(group_id, user.id)
 
         if ban_status == BanStatus.NEWLY_BANNED:
-            logger.info(f"Successfully banned user {user.displayName} (ID: {user.id})")
+            logger.info(f"Successfully banned user {user.display_name} (ID: {user.id})")
         elif ban_status == BanStatus.ALREADY_BANNED:
-            logger.info(f"User {user.displayName} (ID: {user.id}) was already banned")
+            logger.info(f"User {user.display_name} (ID: {user.id}) was already banned")
         elif ban_status == BanStatus.ALREADY_PROCESSED:
             logger.info(
-                f"User {user.displayName} (ID: {user.id}) was already processed"
+                f"User {user.display_name} (ID: {user.id}) was already processed"
             )
         elif ban_status == BanStatus.FAILED:
-            logger.warning(f"Failed to ban user {user.displayName} (ID: {user.id})")
+            logger.warning(f"Failed to ban user {user.display_name} (ID: {user.id})")
         else:
             logger.error(
-                f"Unknown ban status for user {user.displayName} (ID: {user.id})"
+                f"Unknown ban status for user {user.display_name} (ID: {user.id})"
             )
 
     # Save processed users after moderation
@@ -95,17 +94,26 @@ def log_moderation_results(start_time: pendulum.DateTime, end_time: pendulum.Dat
 async def setup_moderation_environment(
     file_handler: FileHandler,
 ) -> Tuple[Config, List[User], ProcessedUserTracker]:
-    config_file, users_file, processed_users_file = get_file_paths()
+    config_file, json_users_file, users_file, processed_users_file = get_file_paths()
 
     config = await Config.load(file_handler, config_file)
-
     user_loader = TextUserLoader(file_handler, users_file)
-    users = await user_loader.load_users()
+    json_user_loader = JSONUserLoader(file_handler, json_users_file)
+    users = await user_loader.load_users() + await json_user_loader.load_users()
 
     processed_user_tracker = ProcessedUserTracker(file_handler, processed_users_file)
     await processed_user_tracker.load()
 
     return config, users, processed_user_tracker
+
+
+def get_file_paths() -> Tuple[str, str, str, str]:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    config_file = os.path.join(script_dir, "config.json")
+    json_users_file = os.path.join(script_dir, "crashers.json")
+    users_file = os.path.join(script_dir, "crasher_id_dump.txt")
+    processed_users_file = os.path.join(script_dir, "processed_users.json")
+    return config_file, json_users_file, users_file, processed_users_file
 
 
 async def main():
@@ -120,11 +128,3 @@ async def main():
 
     start_time, end_time = await run_moderation(api, users_to_ban, config.group_id)
     log_moderation_results(start_time, end_time)
-
-
-def get_file_paths() -> Tuple[str, str, str]:
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    config_file = os.path.join(script_dir, "config.json")
-    users_file = os.path.join(script_dir, "crasher_id_dump.txt")
-    processed_users_file = os.path.join(script_dir, "processed_users.json")
-    return config_file, users_file, processed_users_file
