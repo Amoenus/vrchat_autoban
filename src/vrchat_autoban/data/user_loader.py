@@ -19,7 +19,7 @@ class TextUserLoader:
             content = await self.file_handler.read_file(self.file_path)
             user_ids = content.strip().split(",")
             return [
-                User(id=user_id, display_name="DCN Dump User")
+                User(id=user_id, name="DCN Dump User")
                 for user_id in user_ids
                 if user_id
             ]
