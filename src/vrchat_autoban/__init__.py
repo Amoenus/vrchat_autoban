@@ -1,179 +1,276 @@
 import os
-import time
 import json
-from typing import List
-from abc import ABC, abstractmethod
+from typing import List, Protocol, Tuple
 import vrchatapi
 from vrchatapi.api import authentication_api, groups_api
 from vrchatapi.exceptions import UnauthorizedException
 from vrchatapi.models.two_factor_auth_code import TwoFactorAuthCode
 from vrchatapi.models.two_factor_email_code import TwoFactorEmailCode
 from vrchatapi.models.ban_group_member_request import BanGroupMemberRequest
+from loguru import logger
+import pendulum
+from tqdm import tqdm
+from pydantic import BaseModel, Field
+import asyncio
+import aiofiles
 
-class User:
-    def __init__(self, id: str, display_name: str):
-        self.id = id
-        self.display_name = display_name
 
-class UserLoader(ABC):
-    @abstractmethod
-    def load_users(self) -> List[User]:
-        pass
+class User(BaseModel):
+    id: str
+    displayName: str = Field(alias="display_name")
+
+
+class UserLoader(Protocol):
+    async def load_users(self) -> List[User]: ...
+
+
+class FileReader(Protocol):
+    async def read_file(self, file_path: str) -> str: ...
+
+
+class AsyncFileReader:
+    async def read_file(self, file_path: str) -> str:
+        async with aiofiles.open(file_path, "r") as file:
+            return await file.read()
+
 
 class JSONUserLoader:
-    def __init__(self, file_path: str):
+    def __init__(self, file_reader: FileReader, file_path: str):
+        self.file_reader = file_reader
         self.file_path = file_path
 
-    def load_users(self) -> List[User]:
+    async def load_users(self) -> List[User]:
         try:
-            with open(self.file_path, 'r') as file:
-                data = json.load(file)
+            content = await self.file_reader.read_file(self.file_path)
+            data = json.loads(content)
+            return [User(**member["user"]) for member in data if "user" in member]
         except FileNotFoundError:
-            print(f"Error: User file '{self.file_path}' not found.")
-            print(f"Current working directory: {os.getcwd()}")
-            print("Please ensure the user file exists in the correct location.")
+            logger.error(
+                f"User file '{self.file_path}' not found. Current working directory: {os.getcwd()}"
+            )
             raise SystemExit(1)
         except json.JSONDecodeError:
-            print(f"Error: Unable to parse '{self.file_path}'. Please ensure it's valid JSON.")
+            logger.error(
+                f"Unable to parse '{self.file_path}'. Please ensure it's valid JSON."
+            )
             raise SystemExit(1)
 
-        users = []
-        for member in data:
-            user_data = member.get('user', {})
-            user_id = user_data.get('id')
-            display_name = user_data.get('displayName')
-            if user_id and display_name:
-                users.append(User(user_id, display_name))
-        
-        return users
 
-class TextUserLoader:
-    def __init__(self, file_path: str):
+class TextUserLoader(UserLoader):
+    def __init__(self, file_reader: FileReader, file_path: str):
+        self.file_reader = file_reader
         self.file_path = file_path
 
-    def load_users(self) -> List[User]:
+    async def load_users(self) -> List[User]:
         try:
-            with open(self.file_path, 'r') as file:
-                content = file.read().strip()
-                user_ids = content.split(',')
+            content = await self.file_reader.read_file(self.file_path)
+            user_ids = content.strip().split(",")
+            return [
+                User(id=user_id, display_name="DCN Dump User")
+                for user_id in user_ids
+                if user_id
+            ]
         except FileNotFoundError:
-            print(f"Error: User file '{self.file_path}' not found.")
-            print(f"Current working directory: {os.getcwd()}")
-            print("Please ensure the user file exists in the correct location.")
+            logger.error(
+                f"User file '{self.file_path}' not found. Current working directory: {os.getcwd()}"
+            )
             raise SystemExit(1)
 
-        return [User(id=user_id, display_name="DCN Dump User") for user_id in user_ids if user_id]
+
+class RateLimiter(Protocol):
+    async def wait(self): ...
+
+
+class ProgressBarRateLimiter:
+    def __init__(self, limit: int):
+        self.limit = limit
+
+    async def wait(self):
+        with tqdm(total=self.limit, desc="Rate limit", unit="s", leave=False) as pbar:
+            for _ in range(self.limit):
+                await asyncio.sleep(1)
+                pbar.update(1)
+
 
 class VRChatAuthenticator:
-    def __init__(self, api_client: vrchatapi.ApiClient):
-        self.auth_api = authentication_api.AuthenticationApi(api_client)
+    def __init__(self, auth_api: authentication_api.AuthenticationApi):
+        self.auth_api = auth_api
 
     def authenticate(self):
         try:
             current_user = self.auth_api.get_current_user()
-            print(f"Logged in as: {current_user.display_name}")
+            logger.info(f"Logged in as: {current_user.display_name}")
         except UnauthorizedException as e:
             if e.status == 200:
-                if "Email 2 Factor Authentication" in e.reason:
+                if "Email 2 Factor Authentication" in str(e):
                     self._handle_email_2fa()
-                elif "2 Factor Authentication" in e.reason:
+                elif "2 Factor Authentication" in str(e):
                     self._handle_2fa()
                 current_user = self.auth_api.get_current_user()
             else:
                 raise
         except vrchatapi.ApiException as e:
-            print(f"Exception when calling API: {e}")
+            logger.error(f"Exception when calling API: {e}")
             raise
 
     def _handle_email_2fa(self):
         code = input("Email 2FA Code: ")
-        self.auth_api.verify2_fa_email_code(two_factor_email_code=TwoFactorEmailCode(code))
+        self.auth_api.verify2_fa_email_code(
+            two_factor_email_code=TwoFactorEmailCode(code)
+        )
 
     def _handle_2fa(self):
         code = input("2FA Code: ")
         self.auth_api.verify2_fa(two_factor_auth_code=TwoFactorAuthCode(code))
 
-class GroupBanner:
-    def __init__(self, api_client: vrchatapi.ApiClient):
-        self.groups_api = groups_api.GroupsApi(api_client)
 
-    def ban_user(self, group_id: str, user_id: str) -> bool:
+class GroupModerator(Protocol):
+    async def ban_user(self, group_id: str, user_id: str) -> bool: ...
+
+
+class VRChatGroupModerator:
+    def __init__(self, groups_api: groups_api.GroupsApi, rate_limiter: RateLimiter):
+        self.groups_api = groups_api
+        self.rate_limiter = rate_limiter
+
+    async def ban_user(self, group_id: str, user_id: str) -> bool:
         try:
             ban_request = BanGroupMemberRequest(user_id=user_id)
-            result = self.groups_api.ban_group_member(group_id, ban_group_member_request=ban_request)
-            print(f"Ban result: {result}")  # This will print the GroupMember object returned
+            result = self.groups_api.ban_group_member(
+                group_id, ban_group_member_request=ban_request
+            )
+            logger.info(f"Ban result: {result}")
+            await self.rate_limiter.wait()
             return True
         except vrchatapi.ApiException as e:
-            print(f"Exception when calling GroupsApi->ban_group_member: {e}")
+            logger.error(f"Exception when calling GroupsApi->ban_group_member: {e}")
             return False
 
+
 class VRChatAPI:
-    def __init__(self, username: str, password: str):
-        self.configuration = vrchatapi.Configuration(
-            username=username,
-            password=password,
-        )
-        self.api_client = vrchatapi.ApiClient(self.configuration)
-        self.api_client.user_agent = "VRChatGroupBannerScript/1.0 (https://github.com/Amoenus/vrchat_autoban)"
-        self.authenticator = VRChatAuthenticator(self.api_client)
-        self.banner = GroupBanner(self.api_client)
+    def __init__(self, authenticator: VRChatAuthenticator, moderator: GroupModerator):
+        self.authenticator = authenticator
+        self.moderator = moderator
 
     def authenticate(self):
         self.authenticator.authenticate()
 
-    def ban_user_from_group(self, group_id: str, user_id: str) -> bool:
-        return self.banner.ban_user(group_id, user_id)
+    async def ban_user_from_group(self, group_id: str, user_id: str) -> bool:
+        return await self.moderator.ban_user(group_id, user_id)
 
 
-class Config:
-    def __init__(self, file_path: str):
-        self.file_path = file_path
-        self.data = self.load_config()
+class Config(BaseModel):
+    username: str
+    password: str
+    group_id: str
+    rate_limit: int = Field(default=60)
 
-    def load_config(self):
+    @classmethod
+    async def load_config(cls, file_reader: FileReader, file_path: str) -> "Config":
         try:
-            with open(self.file_path, 'r') as config_file:
-                return json.load(config_file)
+            content = await file_reader.read_file(file_path)
+            data = json.loads(content)
+            return cls(**data)
         except FileNotFoundError:
-            print(f"Error: Config file '{self.file_path}' not found.")
-            print(f"Current working directory: {os.getcwd()}")
-            print("Please ensure the config file exists in the correct location.")
+            logger.error(
+                f"Config file '{file_path}' not found. Current working directory: {os.getcwd()}"
+            )
             raise SystemExit(1)
         except json.JSONDecodeError:
-            print(f"Error: Unable to parse '{self.file_path}'. Please ensure it's valid JSON.")
+            logger.error(
+                f"Unable to parse '{file_path}'. Please ensure it's valid JSON."
+            )
             raise SystemExit(1)
 
-    def get(self, key: str):
-        return self.data.get(key)
 
-def main():
-    # Get the directory of the current script
+async def moderate_users(api: VRChatAPI, users: List[User], group_id: str):
+    for user in tqdm(users, desc="Moderating users", unit="user"):
+        if await api.ban_user_from_group(group_id, user.id):
+            logger.info(f"Successfully banned user {user.displayName} (ID: {user.id})")
+        else:
+            logger.warning(f"Failed to ban user {user.displayName} (ID: {user.id})")
+
+
+def get_file_paths() -> Tuple[str, str]:
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    
-    # Construct the full paths to the config and users files
-    CONFIG_FILE = os.path.join(script_dir, 'config.json')
-    USERS_FILE = os.path.join(script_dir, 'crashers.json')
-    TEXT_USERS_FILE = os.path.join(script_dir, 'crasher_id_dump.txt')
+    config_file = os.path.join(script_dir, "config.json")
+    users_file = os.path.join(script_dir, "crasher_id_dump copy.txt")
+    return config_file, users_file
 
-    API_RATE_LIMIT = 60  # seconds
 
-    config = Config(CONFIG_FILE)
-    api = VRChatAPI(config.get('username'), config.get('password'))
+def setup_logging():
+    logger.add("vrchat_moderation.log", rotation="1 day")
+
+
+async def load_config_and_users(
+    file_reader: FileReader, config_file: str, users_file: str
+) -> Tuple[Config, List[User]]:
+    config_task = asyncio.create_task(Config.load_config(file_reader, config_file))
+    users_task = asyncio.create_task(
+        TextUserLoader(file_reader, users_file).load_users()
+    )
+    return await config_task, await users_task
+
+
+def create_api_client(config: Config) -> vrchatapi.ApiClient:
+    api_client = vrchatapi.ApiClient(
+        vrchatapi.Configuration(
+            username=config.username,
+            password=config.password,
+        )
+    )
+    api_client.user_agent = (
+        "VRChatGroupModerationScript/1.0 (https://github.com/Amoenus/vrchat_autoban)"
+    )
+    return api_client
+
+
+def create_vrchat_api(api_client: vrchatapi.ApiClient, config: Config) -> VRChatAPI:
+    auth_api = authentication_api.AuthenticationApi(api_client)
+    groups_api_instance = groups_api.GroupsApi(api_client)
+
+    authenticator = VRChatAuthenticator(auth_api)
+    rate_limiter = ProgressBarRateLimiter(config.rate_limit)
+    moderator = VRChatGroupModerator(groups_api_instance, rate_limiter)
+
+    return VRChatAPI(authenticator, moderator)
+
+
+async def run_moderation(
+    api: VRChatAPI, users: List[User], group_id: str
+) -> Tuple[pendulum.DateTime, pendulum.DateTime]:
+    start_time = pendulum.now()
+    logger.info(f"Starting moderation process at {start_time}")
+
+    await moderate_users(api, users, group_id)
+
+    end_time = pendulum.now()
+    return start_time, end_time
+
+
+def log_moderation_results(start_time: pendulum.DateTime, end_time: pendulum.DateTime):
+    duration = end_time - start_time
+    logger.info(
+        f"Moderation process completed at {end_time}. Total duration: {duration}"
+    )
+
+
+async def main():
+    config_file, users_file = get_file_paths()
+    setup_logging()
+
+    file_reader = AsyncFileReader()
+    config, users_to_ban = await load_config_and_users(
+        file_reader, config_file, users_file
+    )
+
+    api_client = create_api_client(config)
+    api = create_vrchat_api(api_client, config)
     api.authenticate()
 
-   # json_user_loader = JSONUserLoader(USERS_FILE)
-    text_user_loader = TextUserLoader(TEXT_USERS_FILE)
-    
-    users_to_ban = text_user_loader.load_users()
+    start_time, end_time = await run_moderation(api, users_to_ban, config.group_id)
+    log_moderation_results(start_time, end_time)
 
-    group_id = config.get('group_id')
-
-    for user in users_to_ban:
-        if api.ban_user_from_group(group_id, user.id):
-            print(f"Successfully banned user {user.display_name} (ID: {user.id})")
-        else:
-            print(f"Failed to ban user {user.display_name} (ID: {user.id})")
-        time.sleep(API_RATE_LIMIT)
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
