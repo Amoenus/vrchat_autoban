@@ -82,6 +82,7 @@ tomlkit==0.13.0
     # via pylint
 tqdm==4.66.5
     # via vrchat-autoban
+types-aiofiles==24.1.0.20240626
 types-pytz==2024.1.0.20240417
     # via pandas-stubs
 types-requests==2.32.0.20240712

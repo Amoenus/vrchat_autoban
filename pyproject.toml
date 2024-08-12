@@ -31,6 +31,7 @@ dev-dependencies = [
   "types-tqdm==4.66.0.2",
   "pandas-stubs==2.1.1.230928",
   "mypy-extensions==1.0.0",
+  "types-aiofiles==24.1.0.20240626",
 ]
 
 [tool.hatch.metadata]
