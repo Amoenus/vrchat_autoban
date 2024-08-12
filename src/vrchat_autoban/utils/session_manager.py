@@ -9,7 +9,7 @@ from vrchatapi.models.two_factor_email_code import TwoFactorEmailCode
 
 
 import json
-from http.cookiejar import Cookie
+from http.cookiejar import Cookie, CookieJar
 from typing import Optional, Dict
 
 
@@ -38,7 +38,7 @@ class SessionManager:
         content = json.dumps(session_data, indent=2)
         await self.file_handler.write_file(self.session_file, content)
 
-    def _cookie_to_dict(self, cookie: Cookie) -> Dict[str, str]:
+    def _convert_cookie_to_dict(self, cookie: Cookie) -> Dict[str, str]:
         return {
             "value": str(cookie.value) if cookie.value is not None else "",
             "expires": str(cookie.expires),
@@ -46,7 +46,7 @@ class SessionManager:
             "path": cookie.path,
         }
 
-    def _dict_to_cookie(self, name: str, cookie_dict: Dict[str, str]) -> Cookie:
+    def _convert_dict_to_cookie(self, name: str, cookie_dict: Dict[str, str]) -> Cookie:
         return Cookie(
             version=0,
             name=name,
@@ -67,13 +67,13 @@ class SessionManager:
             rfc2109=False,
         )
 
-    async def authenticate(self):
+    async def authenticate_user(self):
         session = await self.load_session()
 
         if session and "auth" in session and "twoFactorAuth" in session:
             try:
-                auth_cookie = self._dict_to_cookie("auth", session["auth"])
-                two_factor_cookie = self._dict_to_cookie(
+                auth_cookie = self._convert_dict_to_cookie("auth", session["auth"])
+                two_factor_cookie = self._convert_dict_to_cookie(
                     "twoFactorAuth", session["twoFactorAuth"]
                 )
 
@@ -104,16 +104,17 @@ class SessionManager:
                 raise
 
         # Save the new session
-        cookie_jar = self.auth_api.api_client.rest_client.cookie_jar
-        vrchat_cookies = cookie_jar._cookies.get("vrchat.com", {}).get("/", {})
+        cookie_jar: CookieJar = self.auth_api.api_client.rest_client.cookie_jar
+        cookie_jar_cookies = cookie_jar._cookies
+        vrchat_cookies = cookie_jar_cookies.get("vrchat.com", {}).get("/", {})
 
         auth_cookie = vrchat_cookies.get("auth")
         two_factor_cookie = vrchat_cookies.get("twoFactorAuth")
 
         if auth_cookie and two_factor_cookie:
             session_data = {
-                "auth": self._cookie_to_dict(auth_cookie),
-                "twoFactorAuth": self._cookie_to_dict(two_factor_cookie),
+                "auth": self._convert_cookie_to_dict(auth_cookie),
+                "twoFactorAuth": self._convert_cookie_to_dict(two_factor_cookie),
             }
             await self.save_session(session_data)
         else:

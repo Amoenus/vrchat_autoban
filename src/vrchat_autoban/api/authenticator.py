@@ -11,4 +11,4 @@ class VRChatAuthenticator:
         self.session_manager = SessionManager(auth_api, file_handler)
 
     async def authenticate(self):
-        await self.session_manager.authenticate()
+        await self.session_manager.authenticate_user()
