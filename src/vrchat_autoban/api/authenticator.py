@@ -1,4 +1,4 @@
-from vrchatapi.api import authentication_api
+from vrchatapi.api import authentication_api  # type: ignore
 
 from vrchat_autoban.utils.interfaces import FileHandler
 from vrchat_autoban.utils.session_manager import SessionManager
