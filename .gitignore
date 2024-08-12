@@ -1,16 +1,31 @@
-# python generated files
+# Python generated files
 __pycache__/
 *.py[oc]
 build/
 dist/
 wheels/
-*.egg-info
+*.egg-info/
 
-# venv
-.venv
+# Virtual environment
+.venv/
+
+# Project-specific configuration and data files
 src/vrchat_autoban/config.json
 src/vrchat_autoban/crashers.json
 src/vrchat_autoban/crasher_id_dump.txt
 src/vrchat_autoban/processed_users.json
-vrchat_moderation.log
+
+# Log files
+*.log
+
+# Session data
 vrchat_session.json
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
