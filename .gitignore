@@ -13,3 +13,4 @@ src/vrchat_autoban/crashers.json
 src/vrchat_autoban/crasher_id_dump.txt
 src/vrchat_autoban/processed_users.json
 vrchat_moderation.log
+vrchat_session.json
