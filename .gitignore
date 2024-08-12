@@ -10,7 +10,7 @@ wheels/
 .venv/
 
 # Project-specific configuration and data files
-src/vrchat_autoban/config.json
+src/vrchat_autoban/.secrets.toml
 src/vrchat_autoban/crashers.json
 src/vrchat_autoban/crasher_id_dump.txt
 src/vrchat_autoban/processed_users.json

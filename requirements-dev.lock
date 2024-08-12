@@ -27,6 +27,8 @@ colorama==0.4.6
     # via tqdm
 dill==0.3.8
     # via pylint
+dynaconf==3.2.6
+    # via vrchat-autoban
 flake8==7.1.1
 isort==5.13.2
     # via pylint

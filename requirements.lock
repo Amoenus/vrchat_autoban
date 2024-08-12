@@ -17,6 +17,8 @@ annotated-types==0.7.0
 colorama==0.4.6
     # via loguru
     # via tqdm
+dynaconf==3.2.6
+    # via vrchat-autoban
 loguru==0.7.2
     # via vrchat-autoban
 pendulum==3.0.0

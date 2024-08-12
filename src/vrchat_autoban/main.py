@@ -10,7 +10,7 @@ import pendulum
 from vrchat_autoban.api.authenticator import VRChatAuthenticator
 from vrchat_autoban.api.moderator import VRChatGroupModerator
 from vrchat_autoban.api.vrchat_api import VRChatAPI
-from vrchat_autoban.config import Config
+from vrchat_autoban.config import settings
 from vrchat_autoban.data.json_user_loader import JSONUserLoader
 from vrchat_autoban.data.processed_user_tracker import ProcessedUserTracker
 from vrchat_autoban.data.user_loader import TextUserLoader
@@ -22,15 +22,13 @@ from vrchat_autoban.utils.rate_limiter import ProgressBarRateLimiter
 
 
 def create_vrchat_api(
-    config: Config,
     processed_user_tracker: ProcessedUserTracker,
     file_handler: FileHandler,
 ) -> VRChatAPI:
-
     api_client = vrchatapi.ApiClient(
         vrchatapi.Configuration(
-            username=config.username,
-            password=config.password,
+            username=settings.username,
+            password=settings.password,
         )
     )
     api_client.user_agent = (
@@ -41,7 +39,7 @@ def create_vrchat_api(
     groups_api_instance = groups_api.GroupsApi(api_client)
 
     authenticator = VRChatAuthenticator(auth_api, file_handler)
-    rate_limiter = ProgressBarRateLimiter(config.rate_limit)
+    rate_limiter = ProgressBarRateLimiter(settings.rate_limit)
     moderator = VRChatGroupModerator(
         groups_api_instance, rate_limiter, processed_user_tracker
     )
@@ -91,40 +89,61 @@ def log_moderation_results(start_time: pendulum.DateTime, end_time: pendulum.Dat
     )
 
 
+async def load_users(file_handler: FileHandler) -> List[User]:
+    json_users_file, text_users_file = get_user_file_paths()
+    json_user_loader = JSONUserLoader(file_handler, json_users_file)
+    text_user_loader = TextUserLoader(file_handler, text_users_file)
+
+    json_users = await json_user_loader.load_users()
+    text_users = await text_user_loader.load_users()
+
+    return json_users + text_users
+
+
+async def setup_processed_user_tracker(
+    file_handler: FileHandler,
+) -> ProcessedUserTracker:
+    processed_users_file = get_processed_users_file_path()
+    tracker = ProcessedUserTracker(file_handler, processed_users_file)
+    await tracker.load()
+    return tracker
+
+
 async def setup_moderation_environment(
     file_handler: FileHandler,
-) -> Tuple[Config, List[User], ProcessedUserTracker]:
-    config_file, json_users_file, users_file, processed_users_file = get_file_paths()
+) -> Tuple[List[User], ProcessedUserTracker]:
+    users = await load_users(file_handler)
+    processed_user_tracker = await setup_processed_user_tracker(file_handler)
 
-    config = await Config.load(file_handler, config_file)
-    user_loader = TextUserLoader(file_handler, users_file)
-    json_user_loader = JSONUserLoader(file_handler, json_users_file)
-    users = await user_loader.load_users() + await json_user_loader.load_users()
-
-    processed_user_tracker = ProcessedUserTracker(file_handler, processed_users_file)
-    await processed_user_tracker.load()
-
-    return config, users, processed_user_tracker
+    return users, processed_user_tracker
 
 
-def get_file_paths() -> Tuple[str, str, str, str]:
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    config_file = os.path.join(script_dir, "config.json")
-    json_users_file = os.path.join(script_dir, "crashers.json")
-    users_file = os.path.join(script_dir, "crasher_id_dump.txt")
-    processed_users_file = os.path.join(script_dir, "processed_users.json")
-    return config_file, json_users_file, users_file, processed_users_file
+def get_config_file_path() -> str:
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
+
+
+def get_user_file_paths() -> Tuple[str, str]:
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    json_users_file = os.path.join(base_dir, "crashers.json")
+    text_users_file = os.path.join(base_dir, "crasher_id_dump.txt")
+    return json_users_file, text_users_file
+
+
+def get_processed_users_file_path() -> str:
+    return os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "processed_users.json"
+    )
 
 
 async def main():
     setup_logging()
     file_handler = AsyncFileHandler()
 
-    config, users_to_ban, processed_user_tracker = await setup_moderation_environment(
+    users_to_ban, processed_user_tracker = await setup_moderation_environment(
         file_handler
     )
-    api = create_vrchat_api(config, processed_user_tracker, file_handler)
+    api = create_vrchat_api(processed_user_tracker, file_handler)
     await api.authenticate()
 
-    start_time, end_time = await run_moderation(api, users_to_ban, config.group_id)
+    start_time, end_time = await run_moderation(api, users_to_ban, settings.group_id)
     log_moderation_results(start_time, end_time)
