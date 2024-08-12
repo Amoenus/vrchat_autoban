@@ -166,7 +166,7 @@ class SessionManager:
 
     def _cookie_to_dict(self, cookie: Cookie) -> Dict[str, str]:
         return {
-            "value": cookie.value,
+            "value": str(cookie.value) if cookie.value is not None else "",
             "expires": str(cookie.expires),
             "domain": cookie.domain,
             "path": cookie.path,
@@ -189,7 +189,7 @@ class SessionManager:
             discard=False,
             comment=None,
             comment_url=None,
-            rest={"HttpOnly": None, "SameSite": "Lax"},
+            rest={"HttpOnly": "", "SameSite": "Lax"},
             rfc2109=False,
         )
 
