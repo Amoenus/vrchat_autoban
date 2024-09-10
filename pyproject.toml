@@ -3,13 +3,13 @@ name = "vrchat-autoban"
 version = "0.1.0"
 description = "Add your description here"
 dependencies = [
-    "vrchatapi>=1.18.1",
-    "loguru>=0.7.2",
-    "tqdm>=4.66.5",
-    "pendulum>=3.0.0",
+    "vrchatapi==1.18.1",
+    "loguru==0.7.2",
+    "tqdm==4.66.5",
+    "pendulum==3.0.0",
     "pydantic==2.9.1",
-    "aiofiles>=24.1.0",
-    "dynaconf>=3.2.6",
+    "aiofiles==24.1.0",
+    "dynaconf==3.2.6",
 ]
 readme = "README.md"
 requires-python = ">= 3.12"
@@ -22,17 +22,17 @@ build-backend = "hatchling.build"
 managed = true
 dev-dependencies = [
     "mypy==1.11.2",
-    "types-requests>=2.32.0.20240907",
-    "pylint>=3.2.7",
-    "autopep8>=2.0.4",
-    "black>=24.8.0",
-    "pylance>=0.7.5",
-    "pyright>=1.1.379",
-    "flake8>=7.1.1",
-    "types-tqdm>=4.66.0.20240417",
-    "pandas-stubs>=2.2.2.240909",
-    "mypy-extensions>=1.0.0",
-    "types-aiofiles>=24.1.0.20240626",
+    "types-requests==2.32.0.20240907",
+    "pylint==3.2.7",
+    "autopep8==2.0.4",
+    "black==24.8.0",
+    "pylance==0.7.5",
+    "pyright==1.1.379",
+    "flake8==7.1.1",
+    "types-tqdm==4.66.0.20240417",
+    "pandas-stubs==2.2.2.240909",
+    "mypy-extensions==1.0.0",
+    "types-aiofiles==24.1.0.20240626",
 ]
 
 [tool.hatch.metadata]
