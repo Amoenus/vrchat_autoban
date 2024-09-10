@@ -3,13 +3,13 @@ name = "vrchat-autoban"
 version = "0.1.0"
 description = "Add your description here"
 dependencies = [
-    "vrchatapi>=1.18.1",
-    "loguru>=0.7.2",
-    "tqdm>=4.66.5",
-    "pendulum>=3.0.0",
+    "vrchatapi==1.18.1",
+    "loguru==0.7.2",
+    "tqdm==4.66.5",
+    "pendulum==3.0.0",
     "pydantic==2.9.1",
-    "aiofiles>=24.1.0",
-    "dynaconf>=3.2.6",
+    "aiofiles==24.1.0",
+    "dynaconf==3.2.6",
 ]
 readme = "README.md"
 requires-python = ">= 3.12"
