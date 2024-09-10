@@ -68,7 +68,7 @@ pydantic-core==2.23.3
     # via pydantic
 pyflakes==3.2.0
     # via flake8
-pylance==0.16.1
+pylance==0.17.0
 pylint==3.2.7
 pyright==1.1.379
 python-dateutil==2.9.0.post0
