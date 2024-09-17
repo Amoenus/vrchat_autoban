@@ -7,7 +7,7 @@ dependencies = [
     "loguru==0.7.2",
     "tqdm==4.66.5",
     "pendulum==3.0.0",
-    "pydantic==2.9.1",
+    "pydantic==2.9.2",
     "aiofiles==24.1.0",
     "dynaconf==3.2.6",
 ]
