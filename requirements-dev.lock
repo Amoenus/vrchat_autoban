@@ -14,10 +14,10 @@ aiofiles==24.1.0
     # via vrchat-autoban
 annotated-types==0.7.0
     # via pydantic
-astroid==3.2.4
+astroid==3.3.5
     # via pylint
 autopep8==2.3.1
-black==24.8.0
+black==24.10.0
 click==8.1.7
     # via black
 colorama==0.4.6
@@ -37,7 +37,7 @@ loguru==0.7.2
 mccabe==0.7.0
     # via flake8
     # via pylint
-mypy==1.11.2
+mypy==1.12.0
 mypy-extensions==1.0.0
     # via black
     # via mypy
@@ -49,7 +49,7 @@ numpy==1.26.4
     # via pylance
 packaging==24.1
     # via black
-pandas-stubs==2.2.2.240909
+pandas-stubs==2.2.3.241009
 pathspec==0.12.1
     # via black
 pendulum==3.0.0
@@ -68,9 +68,9 @@ pydantic-core==2.23.4
     # via pydantic
 pyflakes==3.2.0
     # via flake8
-pylance==0.17.0
-pylint==3.2.7
-pyright==1.1.379
+pylance==0.18.2
+pylint==3.3.1
+pyright==1.1.385
 python-dateutil==2.9.0.post0
     # via pendulum
     # via time-machine
@@ -87,12 +87,13 @@ tqdm==4.66.5
 types-aiofiles==24.1.0.20240626
 types-pytz==2024.1.0.20240417
     # via pandas-stubs
-types-requests==2.32.0.20240907
+types-requests==2.32.0.20241016
 types-tqdm==4.66.0.20240417
 typing-extensions==4.12.2
     # via mypy
     # via pydantic
     # via pydantic-core
+    # via pyright
 tzdata==2024.1
     # via pendulum
 urllib3==2.2.2

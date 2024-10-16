@@ -8,5 +8,17 @@
       "packageNames": ["*"],
       "pinVersions": true
     }
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": ["^pyproject\\.toml$"],
+      "matchStrings": [
+        "(?<=^dev-dependencies\\s*=\\s*\\[)[^\\]]*"
+      ],
+      "datasourceTemplate": "pypi",
+      "depNameTemplate": "{{depName}}",
+      "versioningTemplate": "pep440",
+      "extractVersionTemplate": "(?<=\"[^\"]+==)([^\"\\s]+)"
+    }
   ]
 }
