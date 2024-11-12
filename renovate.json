@@ -13,12 +13,11 @@
     {
       "fileMatch": ["^pyproject\\.toml$"],
       "matchStrings": [
-        "(?<=^dev-dependencies\\s*=\\s*\\[)[^\\]]*"
+        "(?<=^dev-dependencies\\s*=\\s*\\[)(?<package>[^\\]]*?)(?<depName>\\w+)==(?<currentValue>[^\\s\\]\"]+)"
       ],
       "datasourceTemplate": "pypi",
       "depNameTemplate": "{{depName}}",
-      "versioningTemplate": "pep440",
-      "extractVersionTemplate": "(?<=\"[^\"]+==)([^\"\\s]+)"
+      "versioningTemplate": "pep440"
     }
   ]
 }
