@@ -29,7 +29,7 @@ dev-dependencies = [
     "pylance==0.21.0",
     "pyright==1.1.388",
     "flake8==7.1.1",
-    "types-tqdm==4.66.0.20240417",
+    "types-tqdm==4.67.0.20241221",
     "pandas-stubs==2.2.3.241126",
     "mypy-extensions==1.0.0",
     "types-aiofiles==24.1.0.20240626",
