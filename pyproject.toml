@@ -5,7 +5,7 @@ description = "Add your description here"
 dependencies = [
     "vrchatapi==1.18.8",
     "loguru==0.7.3",
-    "tqdm==4.66.5",
+    "tqdm==4.67.1",
     "pendulum==3.0.0",
     "pydantic==2.10.5",
     "aiofiles==24.1.0",
