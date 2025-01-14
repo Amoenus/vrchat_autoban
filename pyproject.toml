@@ -26,7 +26,7 @@ dev-dependencies = [
     "pylint==3.3.3",
     "autopep8==2.3.1",
     "black==24.10.0",
-    "pylance==0.21.0",
+    "pylance==0.22.0",
     "pyright==1.1.391",
     "flake8==7.1.1",
     "types-tqdm==4.67.0.20241221",
