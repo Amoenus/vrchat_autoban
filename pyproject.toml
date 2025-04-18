@@ -3,7 +3,7 @@ name = "vrchat-autoban"
 version = "0.1.0"
 description = "Add your description here"
 dependencies = [
-    "vrchatapi==1.18.8",
+    "vrchatapi==1.19.2",
     "loguru==0.7.3",
     "tqdm==4.67.1",
     "pendulum==3.0.0",
