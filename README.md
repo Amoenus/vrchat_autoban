@@ -88,6 +88,20 @@ This would override the rate limit, username, password, and group ID, respective
 
 Place both files in the `src/vrchat_autoban/` directory.
 
+Example crasher_id_dump.txt content:
+
+```text
+usr_11111111-aaaa-2222-bbbb-333333333333,usr_44444444-cccc-5555-dddd-666666666666,usr_77777777-eeee-8888-ffff-999999999999
+```
+
+or
+
+```text
+usr_11111111-aaaa-2222-bbbb-333333333333,
+usr_44444444-cccc-5555-dddd-666666666666,
+usr_77777777-eeee-8888-ffff-999999999999
+```
+
 The application will load settings in the following order of precedence:
 1. Environment variables with the "VRCHATBAN_" prefix (highest priority)
 2. `.secrets.toml`
