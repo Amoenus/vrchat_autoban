@@ -1,5 +1,6 @@
 # src/vrchat_autoban/main.py
 import argparse
+import asyncio
 import os
 from pathlib import Path
 from typing import List, Tuple
@@ -142,7 +143,10 @@ async def run_moderation(
                 f"Unknown ban status for user {user.display_name} (ID: {user.id})"
             )
 
-    await api.moderator.processed_user_tracker.save()
+    # This save ensures the processed list is complete after the loop,
+    # even if individual marks also save.
+    if api.moderator and api.moderator.processed_user_tracker:
+        await api.moderator.processed_user_tracker.save()
 
     end_time = pendulum.now()
     return start_time, end_time
@@ -209,28 +213,49 @@ async def setup_moderation_environment(
 async def main_async():
     args = parse_arguments()
 
+    ensure_directory_exists(args.log_file)
     setup_logging(args.log_file)
+
     file_handler = AsyncFileHandler()
-
-    ensure_directory_exists(args.processed_users_file)
-    ensure_directory_exists(args.session_file)
-
-    users_to_ban, processed_user_tracker = await setup_moderation_environment(
-        file_handler,
-        args.crashers_file,
-        args.crasher_id_dump_file,
-        args.processed_users_file,
-    )
-    api = create_vrchat_api(processed_user_tracker, file_handler, args.session_file)
+    processed_user_tracker = None
 
     try:
-        await api.authenticate()
-    except Exception as e:
-        logger.error(f"Authentication failed: {e}")
-        logger.error(
-            "Please check your credentials in .secrets.toml (or environment variables) and ensure VRChat services are reachable."
-        )
-        return
+        ensure_directory_exists(args.processed_users_file)
+        ensure_directory_exists(args.session_file)
 
-    start_time, end_time = await run_moderation(api, users_to_ban, settings.group_id)
-    log_moderation_results(start_time, end_time)
+        users_to_ban, processed_user_tracker = await setup_moderation_environment(
+            file_handler,
+            args.crashers_file,
+            args.crasher_id_dump_file,
+            args.processed_users_file,
+        )
+        api = create_vrchat_api(processed_user_tracker, file_handler, args.session_file)
+
+        logger.info("Attempting to authenticate with VRChat...")
+        await api.authenticate()
+
+        start_time, end_time = await run_moderation(
+            api, users_to_ban, settings.group_id
+        )
+        log_moderation_results(start_time, end_time)
+
+    except (KeyboardInterrupt, asyncio.CancelledError):
+        logger.warning(
+            "Moderation process was interrupted by user or cancellation signal."
+        )
+        if processed_user_tracker is not None:
+            logger.info(
+                "Attempting to save the current list of processed users due to interruption..."
+            )
+            try:
+                await processed_user_tracker.save()
+                logger.info("Processed users list saved successfully.")
+            except Exception as e_save:
+                logger.error(
+                    f"Failed to save processed users during interruption handling: {e_save}"
+                )
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {e}")
+        logger.exception("Unhandled error traceback:")
+    finally:
+        logger.info("VRChat Auto-Ban tool execution finished or was terminated.")

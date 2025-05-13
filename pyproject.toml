@@ -30,3 +30,16 @@ dev = [
     "mypy-extensions==1.1.0",
     "types-aiofiles==24.1.0.20250326",
 ]
+
+[tool.mypy]
+python_version = "3.12" # Specify your Python version
+
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = "dynaconf.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "vrchatapi.*"
+ignore_missing_imports = true

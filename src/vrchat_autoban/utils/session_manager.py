@@ -89,9 +89,9 @@ class SessionManager:
             comment=None,
             comment_url=None,
             rest={
-                "HttpOnly": None,
+                "HttpOnly": "",
                 "SameSite": "Lax",
-            },  # None for HttpOnly as per some cookiejar behaviors
+            },
             rfc2109=False,
         )
 
@@ -185,17 +185,10 @@ class SessionManager:
 
         if cookie_jar:
             vrchat_cookies = {}
-            for (
-                domain_cookies
-            ) in cookie_jar._cookies.values():  # Iterate through domains
-                for path_cookies in domain_cookies.values():  # Iterate through paths
-                    for (
-                        name,
-                        cookie_obj,
-                    ) in path_cookies.items():  # Iterate through cookies
-                        vrchat_cookies[name] = (
-                            cookie_obj  # Store by name, assumes 'vrchat.com' cookies are of interest
-                        )
+            for _domain_cookies in cookie_jar:
+                for cookie in cookie_jar:
+                    if cookie.domain.endswith("vrchat.com"):
+                        vrchat_cookies[cookie.name] = cookie
 
             auth_cookie_obj = vrchat_cookies.get("auth")
             two_factor_cookie_obj = vrchat_cookies.get("twoFactorAuth")
