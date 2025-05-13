@@ -123,15 +123,20 @@ def get_config_file_path() -> str:
 
 
 def get_user_file_paths() -> Tuple[str, str]:
+    crasher_id_dump_file = "crasher_id_dump.txt"
+    crashers_json_file = "crashers.json"
+
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    json_users_file = os.path.join(base_dir, "crashers.json")
-    text_users_file = os.path.join(base_dir, "crasher_id_dump.txt")
+    json_users_file = os.path.join(base_dir, crashers_json_file)
+    text_users_file = os.path.join(base_dir, crasher_id_dump_file)
     return json_users_file, text_users_file
 
 
 def get_processed_users_file_path() -> str:
+    processed_users_filename = "processed_users.json"
+
     return os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "processed_users.json"
+        os.path.dirname(os.path.abspath(__file__)), processed_users_filename
     )
 
 
