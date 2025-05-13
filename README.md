@@ -114,7 +114,7 @@ This allows for flexible configuration management while keeping sensitive inform
 Run the script:
 
 ```bash
-rye run python src/vrchat_autoban/__init__.py
+uv run python src/vrchat_autoban/__init__.py
 ```
 
 The script will:
