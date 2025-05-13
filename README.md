@@ -5,6 +5,7 @@
 The VRChat Group Auto-Ban Tool is designed to assist VRChat group moderators in efficiently managing large-scale banning operations. Its primary purpose is to automate the process of banning multiple users from a specified VRChat group, particularly useful when dealing with spam accounts, malicious users, or cleaning up after a major incident.
 
 Key purposes of this tool include:
+
 - Streamlining the banning process for group moderators
 - Reducing the time and effort required to manage large groups
 - Providing a systematic approach to handle ban lists exported from VRCX or other sources
@@ -67,7 +68,7 @@ password = "your_vrchat_password"
 group_id = "grp_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ```
 
-Replace the values with your VRChat credentials and the ID of the group you want to manage. 
+Replace the values with your VRChat credentials and the ID of the group you want to manage.
 
 **Note:** The `.secrets.toml` file contains sensitive information. Never commit this file to version control or share it publicly. Ensure `.secrets.toml` is added to your `.gitignore` file to prevent accidentally committing sensitive information.
 
@@ -103,7 +104,8 @@ usr_77777777-eeee-8888-ffff-999999999999
 ```
 
 The application will load settings in the following order of precedence:
-1. Environment variables with the "VRCHATBAN_" prefix (highest priority)
+
+1. Environment variables with the "VRCHATBAN\_" prefix (highest priority)
 2. `.secrets.toml`
 3. `settings.toml` (lowest priority)
 
@@ -118,6 +120,7 @@ uv run python src/vrchat_autoban/__init__.py
 ```
 
 The script will:
+
 1. Load the configuration and user data
 2. Authenticate with VRChat (using stored session if available)
 3. Process each user ID, attempting to ban them from the specified group
@@ -144,6 +147,7 @@ The script uses the `loguru` library for logging. Logs are written to both the c
 ## Error Handling
 
 The script includes error handling for various scenarios, including:
+
 - Configuration file not found or invalid
 - Authentication failures
 - API exceptions during ban operations
