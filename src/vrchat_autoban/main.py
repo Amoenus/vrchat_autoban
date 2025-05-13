@@ -1,4 +1,3 @@
-# src/vrchat_autoban/main.py
 import argparse
 import asyncio
 import os
@@ -17,13 +16,13 @@ from vrchat_autoban.api.moderator import VRChatGroupModerator
 from vrchat_autoban.api.vrchat_api import VRChatAPI
 from vrchat_autoban.config import settings
 from vrchat_autoban.constants import (
-    APP_NAME,
     APP_AUTHOR,
-    DEFAULT_CRASHERS_JSON_FILENAME,
+    APP_NAME,
     DEFAULT_CRASHER_ID_DUMP_FILENAME,
+    DEFAULT_CRASHERS_JSON_FILENAME,
+    DEFAULT_LOG_FILENAME,
     DEFAULT_PROCESSED_USERS_FILENAME,
     DEFAULT_SESSION_FILENAME,
-    DEFAULT_LOG_FILENAME,
 )
 from vrchat_autoban.data.json_user_loader import JSONUserLoader
 from vrchat_autoban.data.processed_user_tracker import ProcessedUserTracker
