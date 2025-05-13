@@ -153,6 +153,30 @@ The script includes error handling for various scenarios, including:
 - API exceptions during ban operations
 - Rate limiting
 
+## Deduplicating User ID Lists (Utility Script)
+
+To help manage and clean your input user ID lists, especially the `crasher_id_dump.txt` file, a utility script is provided to deduplicate entries, trim whitespace, and standardize the format.
+
+**Script Location:** `src/vrchat_autoban/deduplicate_ids.py`
+
+**Purpose:**
+This script reads a comma-separated text file of user IDs (like the one used for `crasher_id_dump.txt`). It performs the following actions:
+- Removes any leading or trailing whitespace from each user ID.
+- Eliminates duplicate user IDs.
+- Handles IDs spread across multiple lines as long as they are comma-separated.
+- Filters out any empty entries that might result from extra commas or blank lines.
+- Sorts the unique user IDs alphabetically.
+- Overwrites the original file with the cleaned, sorted, and comma-separated list of unique user IDs.
+
+This is useful for ensuring your input list is clean and efficient before running the main auto-ban tool.
+
+**Usage:**
+To run the deduplication script, navigate to the project's root directory and use the following command:
+
+```bash
+uv run python src/vrchat_autoban/deduplicate_ids.py
+```
+
 ## Caution
 
 - Use this tool responsibly and in accordance with VRChat's terms of service.
