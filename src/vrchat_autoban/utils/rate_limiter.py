@@ -1,7 +1,6 @@
-from tqdm import tqdm
-
-
 import asyncio
+
+from tqdm import tqdm
 
 
 class ProgressBarRateLimiter:

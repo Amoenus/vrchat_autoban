@@ -1,11 +1,9 @@
-from vrchat_autoban.utils.interfaces import FileHandler
-
+import json
+from typing import Set
 
 from loguru import logger
 
-
-import json
-from typing import Set
+from vrchat_autoban.utils.interfaces import FileHandler
 
 
 class ProcessedUserTracker:

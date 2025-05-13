@@ -1,12 +1,13 @@
+import json
+
 from loguru import logger
 from vrchatapi.api import groups_api
 from vrchatapi.exceptions import ApiException
 from vrchatapi.models.ban_group_member_request import BanGroupMemberRequest
+
 from vrchat_autoban.data.processed_user_tracker import ProcessedUserTracker
 from vrchat_autoban.models.ban_status import BanStatus
 from vrchat_autoban.utils.interfaces import RateLimiter
-
-import json
 
 
 class VRChatGroupModerator:

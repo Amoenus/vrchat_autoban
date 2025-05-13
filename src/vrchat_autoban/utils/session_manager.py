@@ -1,5 +1,6 @@
-from vrchat_autoban.utils.interfaces import FileHandler
-
+import json
+from http.cookiejar import Cookie, CookieJar
+from typing import Dict, Optional
 
 from loguru import logger
 from vrchatapi.api import authentication_api
@@ -7,10 +8,7 @@ from vrchatapi.exceptions import ApiException
 from vrchatapi.models.two_factor_auth_code import TwoFactorAuthCode
 from vrchatapi.models.two_factor_email_code import TwoFactorEmailCode
 
-
-import json
-from http.cookiejar import Cookie, CookieJar
-from typing import Optional, Dict
+from vrchat_autoban.utils.interfaces import FileHandler
 
 
 class SessionManager:

@@ -1,6 +1,6 @@
-from vrchat_autoban.models.ban_status import BanStatus
 from vrchat_autoban.api.authenticator import VRChatAuthenticator
 from vrchat_autoban.api.moderator import VRChatGroupModerator
+from vrchat_autoban.models.ban_status import BanStatus
 
 
 class VRChatAPI:

@@ -1,10 +1,11 @@
+import json
 import os
 from typing import List
-import json
+
 from loguru import logger
 
-from vrchat_autoban.utils.interfaces import FileHandler
 from vrchat_autoban.models.user import User
+from vrchat_autoban.utils.interfaces import FileHandler
 
 
 class JSONUserLoader:
