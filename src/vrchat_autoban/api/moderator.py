@@ -23,7 +23,7 @@ class VRChatGroupModerator:
 
     async def ban_user(self, group_id: str, user_id: str) -> BanStatus:
         if self.processed_user_tracker.is_processed(user_id):
-            logger.info(f"User {user_id} already processed. Skipping.")
+            # logger.info(f"User {user_id} already processed. Skipping.") # Already logged by tracker
             return BanStatus.ALREADY_PROCESSED
 
         try:
@@ -31,7 +31,9 @@ class VRChatGroupModerator:
             result = self.groups_api.ban_group_member(
                 group_id, ban_group_member_request=ban_request
             )
-            logger.info(f"Ban result: {result}")
+            logger.debug(
+                f"Ban API call result for {user_id}: {result}"
+            )  # Changed to debug for less verbose success
             await self.processed_user_tracker.mark_as_processed(user_id)
             await self._apply_rate_limit()
             return BanStatus.NEWLY_BANNED
@@ -39,25 +41,32 @@ class VRChatGroupModerator:
             return await self._handle_ban_exception(e, user_id)
 
     async def _handle_ban_exception(self, e: ApiException, user_id: str) -> BanStatus:
-        if e.status == 400:
+        error_message = ""
+        if e.body:
             try:
                 error_body = json.loads(e.body)
-                if "User is already banned" in error_body.get("error", {}).get(
-                    "message", ""
-                ):
-                    logger.info(
-                        f"User {user_id} is already banned. Marking as processed."
-                    )
-                    await self.processed_user_tracker.mark_as_processed(user_id)
-                    await self._apply_rate_limit()
-                    return BanStatus.ALREADY_BANNED
+                error_message = error_body.get("error", {}).get("message", "")
             except json.JSONDecodeError:
-                pass  # If we can't parse the JSON, we'll fall through to the general error handling
+                logger.warning(
+                    f"Failed to parse JSON from error body for user {user_id}. Status: {e.status}. Body: {e.body}"
+                )
+                # Fall through to general error logging
 
+        if e.status == 400 and "User is already banned" in error_message:
+            logger.info(f"User {user_id} is already banned. Marking as processed.")
+            await self.processed_user_tracker.mark_as_processed(user_id)
+            await self._apply_rate_limit()
+            return BanStatus.ALREADY_BANNED
+
+        # General error logging
         logger.error(
-            f"Exception when calling GroupsApi->ban_group_member: ({e.status}) {e.reason}"
+            f"Exception when calling GroupsApi->ban_group_member for user {user_id}: ({e.status}) {e.reason}"
         )
-        logger.error(f"Response body: {e.body}")
+        if error_message:  # Log parsed message if available
+            logger.error(f"API Error Message: {error_message}")
+        elif e.body:  # Log raw body if not empty and no parsed message
+            logger.error(f"Response body: {e.body}")
+
         await self._apply_rate_limit()  # Wait for rate limit after failed API call
         return BanStatus.FAILED
 

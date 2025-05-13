@@ -1,7 +1,10 @@
+import argparse
 import os
+from pathlib import Path
 from typing import List, Tuple
 
 import pendulum
+import platformdirs
 import vrchatapi
 from loguru import logger
 from tqdm import tqdm
@@ -11,6 +14,15 @@ from vrchat_autoban.api.authenticator import VRChatAuthenticator
 from vrchat_autoban.api.moderator import VRChatGroupModerator
 from vrchat_autoban.api.vrchat_api import VRChatAPI
 from vrchat_autoban.config import settings
+from vrchat_autoban.constants import (
+    APP_AUTHOR,
+    APP_NAME,
+    DEFAULT_CRASHER_ID_DUMP_FILENAME,
+    DEFAULT_CRASHERS_JSON_FILENAME,
+    DEFAULT_LOG_FILENAME,
+    DEFAULT_PROCESSED_USERS_FILENAME,
+    DEFAULT_SESSION_FILENAME,
+)
 from vrchat_autoban.data.json_user_loader import JSONUserLoader
 from vrchat_autoban.data.processed_user_tracker import ProcessedUserTracker
 from vrchat_autoban.data.user_loader import TextUserLoader
@@ -21,9 +33,62 @@ from vrchat_autoban.utils.interfaces import FileHandler
 from vrchat_autoban.utils.rate_limiter import ProgressBarRateLimiter
 
 
+def ensure_directory_exists(file_path: Path):
+    """Ensures the directory for the given file_path exists."""
+    parent_dir = file_path.parent
+    if not parent_dir.exists():
+        parent_dir.mkdir(parents=True, exist_ok=True)
+        logger.info(f"Created directory: {parent_dir}")
+
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="VRChat Group Auto-Ban Tool.")
+
+    # User-provided input files (default to CWD for easier user experience)
+    parser.add_argument(
+        "--crashers-file",
+        type=Path,
+        default=Path(os.path.dirname(os.path.abspath(__file__)))
+        / DEFAULT_CRASHERS_JSON_FILENAME,
+        help=f"Path to the JSON file containing user data from VRCX group export. (Default: relative to script location at src/vrchat_autoban/{DEFAULT_CRASHERS_JSON_FILENAME})",
+    )
+    parser.add_argument(
+        "--crasher-id-dump-file",
+        type=Path,
+        default=Path(os.path.dirname(os.path.abspath(__file__)))
+        / DEFAULT_CRASHER_ID_DUMP_FILENAME,
+        help=f"Path to the text file containing comma-separated user IDs. (Default: relative to script location at src/vrchat_autoban/{DEFAULT_CRASHER_ID_DUMP_FILENAME})",
+    )
+
+    # Application-managed files (default to platformdirs locations)
+    default_user_data_dir = Path(platformdirs.user_data_dir(APP_NAME, APP_AUTHOR))
+    default_user_log_dir = Path(platformdirs.user_log_dir(APP_NAME, APP_AUTHOR))
+
+    parser.add_argument(
+        "--processed-users-file",
+        type=Path,
+        default=default_user_data_dir / DEFAULT_PROCESSED_USERS_FILENAME,
+        help=f"Path to the JSON file for tracking processed user IDs. (Default: {default_user_data_dir / DEFAULT_PROCESSED_USERS_FILENAME})",
+    )
+    parser.add_argument(
+        "--session-file",
+        type=Path,
+        default=default_user_data_dir / DEFAULT_SESSION_FILENAME,
+        help=f"Path to the JSON file for storing VRChat session data. (Default: {default_user_data_dir / DEFAULT_SESSION_FILENAME})",
+    )
+    parser.add_argument(
+        "--log-file",
+        type=Path,
+        default=default_user_log_dir / DEFAULT_LOG_FILENAME,
+        help=f"Path to the log file. (Default: {default_user_log_dir / DEFAULT_LOG_FILENAME})",
+    )
+    return parser.parse_args()
+
+
 def create_vrchat_api(
     processed_user_tracker: ProcessedUserTracker,
     file_handler: FileHandler,
+    session_file_path: Path,
 ) -> VRChatAPI:
     api_client = vrchatapi.ApiClient(
         vrchatapi.Configuration(
@@ -38,7 +103,9 @@ def create_vrchat_api(
     auth_api = authentication_api.AuthenticationApi(api_client)
     groups_api_instance = groups_api.GroupsApi(api_client)
 
-    authenticator = VRChatAuthenticator(auth_api, file_handler)
+    authenticator = VRChatAuthenticator(
+        auth_api, file_handler, session_file_path
+    )
     rate_limiter = ProgressBarRateLimiter(settings.rate_limit)
     moderator = VRChatGroupModerator(
         groups_api_instance, rate_limiter, processed_user_tracker
@@ -52,6 +119,10 @@ async def run_moderation(
 ) -> Tuple[pendulum.DateTime, pendulum.DateTime]:
     start_time = pendulum.now()
     logger.info(f"Starting moderation process at {start_time}")
+
+    if not users:
+        logger.warning("No users loaded to moderate. Exiting moderation early.")
+        return start_time, pendulum.now()
 
     for user in tqdm(users, desc="Moderating users", unit="user"):
         ban_status = await api.ban_user_from_group(group_id, user.id)
@@ -78,77 +149,90 @@ async def run_moderation(
     return start_time, end_time
 
 
-def setup_logging():
-    logger.add("vrchat_moderation.log", rotation="1 day")
+def setup_logging(log_file_path: Path):
+    ensure_directory_exists(log_file_path)
+    logger.remove()
+    logger.add(
+        lambda msg: tqdm.write(msg, end=""), colorize=True, level="INFO"
+    ) 
+    logger.add(log_file_path, rotation="1 day", level="INFO")
 
 
 def log_moderation_results(start_time: pendulum.DateTime, end_time: pendulum.DateTime):
     duration = end_time - start_time
     logger.info(
-        f"Moderation process completed at {end_time}. Total duration: {duration}"
+        f"Moderation process completed at {end_time}. Total duration: {duration.in_words()}"
     )
 
 
-async def load_users(file_handler: FileHandler) -> List[User]:
-    json_users_file, text_users_file = get_user_file_paths()
-    json_user_loader = JSONUserLoader(file_handler, json_users_file)
-    text_user_loader = TextUserLoader(file_handler, text_users_file)
+async def load_users(
+    file_handler: FileHandler, json_users_file: Path, text_users_file: Path
+) -> List[User]:
+    json_user_loader = JSONUserLoader(file_handler, str(json_users_file))
+    text_user_loader = TextUserLoader(file_handler, str(text_users_file))
 
-    json_users = await json_user_loader.load_users()
-    text_users = await text_user_loader.load_users()
+    loaded_json_users = []
+    if json_users_file.exists():
+        loaded_json_users = await json_user_loader.load_users()
+    else:
+        logger.warning(f"JSON user file not found: {json_users_file}. Skipping.")
 
-    return json_users + text_users
+    loaded_text_users = []
+    if text_users_file.exists():
+        loaded_text_users = await text_user_loader.load_users()
+    else:
+        logger.warning(f"Text user file not found: {text_users_file}. Skipping.")
+
+    return loaded_json_users + loaded_text_users
 
 
 async def setup_processed_user_tracker(
-    file_handler: FileHandler,
+    file_handler: FileHandler, processed_users_file: Path  # Modified
 ) -> ProcessedUserTracker:
-    processed_users_file = get_processed_users_file_path()
-    tracker = ProcessedUserTracker(file_handler, processed_users_file)
+    ensure_directory_exists(processed_users_file)
+    tracker = ProcessedUserTracker(file_handler, str(processed_users_file))
     await tracker.load()
     return tracker
 
 
 async def setup_moderation_environment(
     file_handler: FileHandler,
+    json_users_file: Path,
+    text_users_file: Path,
+    processed_users_file: Path,
 ) -> Tuple[List[User], ProcessedUserTracker]:
-    users = await load_users(file_handler)
-    processed_user_tracker = await setup_processed_user_tracker(file_handler)
+    users = await load_users(file_handler, json_users_file, text_users_file)
+    processed_user_tracker = await setup_processed_user_tracker(
+        file_handler, processed_users_file
+    )
 
     return users, processed_user_tracker
 
 
-def get_config_file_path() -> str:
-    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
 
+async def main_async():
+    args = parse_arguments()
 
-def get_user_file_paths() -> Tuple[str, str]:
-    crasher_id_dump_file = "crasher_id_dump.txt"
-    crashers_json_file = "crashers.json"
-
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    json_users_file = os.path.join(base_dir, crashers_json_file)
-    text_users_file = os.path.join(base_dir, crasher_id_dump_file)
-    return json_users_file, text_users_file
-
-
-def get_processed_users_file_path() -> str:
-    processed_users_filename = "processed_users.json"
-
-    return os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), processed_users_filename
-    )
-
-
-async def main():
-    setup_logging()
+    setup_logging(args.log_file)
     file_handler = AsyncFileHandler()
 
-    users_to_ban, processed_user_tracker = await setup_moderation_environment(
-        file_handler
-    )
-    api = create_vrchat_api(processed_user_tracker, file_handler)
-    await api.authenticate()
+    ensure_directory_exists(args.session_file)  # Ensure session dir exists
 
+    users_to_ban, processed_user_tracker = await setup_moderation_environment(
+        file_handler,
+        args.crashers_file,
+        args.crasher_id_dump_file,
+        args.processed_users_file,
+    )
+    api = create_vrchat_api(processed_user_tracker, file_handler, args.session_file)
+
+    try:
+        await api.authenticate()
+    except Exception as e:
+        logger.error(f"Authentication failed: {e}")
+        logger.error(
+            "Please check your credentials in .secrets.toml (or environment variables) and ensure VRChat services are reachable."
+        )
+        return
     start_time, end_time = await run_moderation(api, users_to_ban, settings.group_id)
     log_moderation_results(start_time, end_time)
