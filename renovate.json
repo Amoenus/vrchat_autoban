@@ -5,13 +5,18 @@
   ],
   "packageRules": [
     {
-      "packageNames": ["*"],
-      "pinVersions": true
+      "matchPackageNames": [
+        "*"
+      ],
+      "rangeStrategy": "pin"
     }
   ],
-  "regexManagers": [
+  "customManagers": [
     {
-      "fileMatch": ["^pyproject\\.toml$"],
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^pyproject\\.toml$/"
+      ],
       "matchStrings": [
         "\"(?<depName>[^\"]+)==(?<currentValue>[^\"]+)\""
       ],
