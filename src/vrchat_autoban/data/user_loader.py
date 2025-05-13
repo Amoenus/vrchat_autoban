@@ -1,12 +1,10 @@
-from vrchat_autoban.utils.interfaces import FileHandler
-from vrchat_autoban.models.user import User
-
+import os
+from typing import List
 
 from loguru import logger
 
-
-import os
-from typing import List
+from vrchat_autoban.models.user import User
+from vrchat_autoban.utils.interfaces import FileHandler
 
 
 class TextUserLoader:
@@ -27,4 +25,4 @@ class TextUserLoader:
             logger.error(
                 f"User file '{self.file_path}' not found. Current working directory: {os.getcwd()}"
             )
-            raise SystemExit(1)
+            return []
