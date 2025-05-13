@@ -22,16 +22,16 @@ Key purposes of this tool include:
 ## Prerequisites
 
 - Python 3.12 or higher
-- Rye (Python project manager)
+- uv (Python project manager)
 
 ## Setup
 
-This project uses Rye for Python environment and dependency management. To set up the project:
+This project uses uv for Python environment and dependency management. To set up the project:
 
-1. Install Rye if you haven't already: [Rye Installation Guide](https://rye.astral.sh/guide/installation/)
+1. Install uv if you haven't already: [uv Installation Guide](https://docs.astral.sh/uv/getting-started/installation/)
 2. Clone the repository
 3. Navigate to the project directory
-4. Run `rye sync` to install dependencies
+4. Run `uv sync` to install dependencies
 
 The project dependencies and settings are managed through the `pyproject.toml` file.
 

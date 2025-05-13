@@ -12,31 +12,20 @@ dependencies = [
     "dynaconf==3.2.7",
 ]
 readme = "README.md"
-requires-python = ">= 3.13"
+requires-python = ">=3.12"
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.rye]
-managed = true
-dev-dependencies = [
-    "mypy==1.14.1",
-    "types-requests==2.32.0.20241016",
-    "pylint==3.3.3",
-    "autopep8==2.3.1",
+[dependency-groups]
+dev = [
+    "mypy==1.15.0",
+    "types-requests==2.32.0.20250328",
+    "pylint==3.3.7",
+    "autopep8==2.3.2",
     "black==25.1.0",
-    "pylance==0.21.0",
-    "pyright==1.1.391",
-    "flake8==7.1.1",
-    "types-tqdm==4.67.0.20241221",
-    "pandas-stubs==2.2.3.241126",
-    "mypy-extensions==1.0.0",
-    "types-aiofiles==24.1.0.20241221",
+    "pylance==0.26.1",
+    "pyright==1.1.400",
+    "flake8==7.2.0",
+    "types-tqdm==4.67.0.20250513",
+    "pandas-stubs==2.2.3.250308",
+    "mypy-extensions==1.1.0",
+    "types-aiofiles==24.1.0.20250326",
 ]
-
-[tool.hatch.metadata]
-allow-direct-references = true
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/vrchat_autoban"]
