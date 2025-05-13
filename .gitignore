@@ -13,7 +13,8 @@ wheels/
 src/vrchat_autoban/.secrets.toml
 src/vrchat_autoban/crashers.json
 src/vrchat_autoban/crasher_id_dump.txt
-src/vrchat_autoban/processed_users.json
+src/vrchat_autoban/processed_account_blocks.json
+src/vrchat_autoban/processed_group_bans.json
 
 # Log files
 *.log

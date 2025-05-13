@@ -11,10 +11,6 @@ class ProcessedUserTracker:
         self.file_handler = file_handler
         self.file_path = file_path
         self.processed_users: Set[str] = set()
-        # Suggestion from review: Saving on every addition is safer.
-        # For very large numbers of new users, an alternative might be to save
-        # periodically or at the end of the run_moderation loop.
-        # Current approach is kept for data integrity.
 
     async def load(self):
         try:
@@ -25,21 +21,30 @@ class ProcessedUserTracker:
             )
         except FileNotFoundError:
             logger.info(
-                f"Processed users file '{self.file_path}' not found. Starting fresh."
+                f"Processed users file '{self.file_path}' not found. Starting fresh for this action type."
             )
+            self.processed_users = set()  # Ensure it's initialized
         except json.JSONDecodeError:
             logger.error(
-                f"Unable to parse '{self.file_path}'. Please ensure it's valid JSON. Starting fresh."
+                f"Unable to parse '{self.file_path}'. Please ensure it's valid JSON. Starting fresh for this action type."
             )
-            # Optionally, could raise SystemExit or try to backup/rename the corrupted file.
-            # For now, starting fresh is a simple recovery.
+            self.processed_users = set()  # Ensure it's initialized
+        except Exception as e:
+            logger.error(
+                f"Unexpected error loading processed users from '{self.file_path}': {e}. Starting fresh."
+            )
             self.processed_users = set()
 
     async def save(self):
         try:
+            # Ensure parent directory exists before trying to write
+            # This might be better handled at app startup or when file_path is first determined
+            # from pathlib import Path
+            # Path(self.file_path).parent.mkdir(parents=True, exist_ok=True)
+
             content = json.dumps(list(self.processed_users), indent=2, sort_keys=True)
             await self.file_handler.write_file(self.file_path, content)
-            logger.debug(
+            logger.debug(  # Changed to debug for less verbose regular operation
                 f"Saved {len(self.processed_users)} processed users to {self.file_path}"
             )
         except Exception as e:
@@ -48,13 +53,17 @@ class ProcessedUserTracker:
     def is_processed(self, user_id: str) -> bool:
         is_proc = user_id in self.processed_users
         if is_proc:
-            logger.info(f"User {user_id} already processed. Skipping.")
+            # This log can be quite verbose if many users are already processed.
+            # Consider making it DEBUG or only logging from the main loop.
+            logger.debug(
+                f"User {user_id} found in processed list '{self.file_path}'. Skipping associated action."
+            )
         return is_proc
 
     async def mark_as_processed(self, user_id: str):
         if user_id not in self.processed_users:
             self.processed_users.add(user_id)
-            # The review noted saving immediately is safer, which is current behavior.
-            # If performance becomes an issue for extremely large lists,
-            # this save could be deferred or batched.
+            # Save immediately to ensure data integrity on interruption
             await self.save()
+        # else:
+        # logger.debug(f"User {user_id} was already in the set for {self.file_path}, no new mark needed.")
