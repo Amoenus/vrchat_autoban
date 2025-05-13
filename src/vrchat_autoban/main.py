@@ -1,3 +1,4 @@
+# src/vrchat_autoban/main.py
 import argparse
 import os
 from pathlib import Path
@@ -15,13 +16,13 @@ from vrchat_autoban.api.moderator import VRChatGroupModerator
 from vrchat_autoban.api.vrchat_api import VRChatAPI
 from vrchat_autoban.config import settings
 from vrchat_autoban.constants import (
-    APP_AUTHOR,
     APP_NAME,
-    DEFAULT_CRASHER_ID_DUMP_FILENAME,
+    APP_AUTHOR,
     DEFAULT_CRASHERS_JSON_FILENAME,
-    DEFAULT_LOG_FILENAME,
+    DEFAULT_CRASHER_ID_DUMP_FILENAME,
     DEFAULT_PROCESSED_USERS_FILENAME,
     DEFAULT_SESSION_FILENAME,
+    DEFAULT_LOG_FILENAME,
 )
 from vrchat_autoban.data.json_user_loader import JSONUserLoader
 from vrchat_autoban.data.processed_user_tracker import ProcessedUserTracker
@@ -44,38 +45,39 @@ def ensure_directory_exists(file_path: Path):
 def parse_arguments():
     parser = argparse.ArgumentParser(description="VRChat Group Auto-Ban Tool.")
 
-    # User-provided input files (default to CWD for easier user experience)
+    # Base directory for source files, to default to user's provided structure
+    source_base_dir = Path(os.path.dirname(os.path.abspath(__file__)))
+
+    # User-provided input files
     parser.add_argument(
         "--crashers-file",
         type=Path,
-        default=Path(os.path.dirname(os.path.abspath(__file__)))
-        / DEFAULT_CRASHERS_JSON_FILENAME,
-        help=f"Path to the JSON file containing user data from VRCX group export. (Default: relative to script location at src/vrchat_autoban/{DEFAULT_CRASHERS_JSON_FILENAME})",
+        default=source_base_dir / DEFAULT_CRASHERS_JSON_FILENAME,
+        help=f"Path to the JSON file containing user data from VRCX group export. (Default: {source_base_dir / DEFAULT_CRASHERS_JSON_FILENAME})",
     )
     parser.add_argument(
         "--crasher-id-dump-file",
         type=Path,
-        default=Path(os.path.dirname(os.path.abspath(__file__)))
-        / DEFAULT_CRASHER_ID_DUMP_FILENAME,
-        help=f"Path to the text file containing comma-separated user IDs. (Default: relative to script location at src/vrchat_autoban/{DEFAULT_CRASHER_ID_DUMP_FILENAME})",
+        default=source_base_dir / DEFAULT_CRASHER_ID_DUMP_FILENAME,
+        help=f"Path to the text file containing comma-separated user IDs. (Default: {source_base_dir / DEFAULT_CRASHER_ID_DUMP_FILENAME})",
     )
 
-    # Application-managed files (default to platformdirs locations)
-    default_user_data_dir = Path(platformdirs.user_data_dir(APP_NAME, APP_AUTHOR))
-    default_user_log_dir = Path(platformdirs.user_log_dir(APP_NAME, APP_AUTHOR))
-
+    # Application-managed files - defaulting to source directory for reuse
     parser.add_argument(
         "--processed-users-file",
         type=Path,
-        default=default_user_data_dir / DEFAULT_PROCESSED_USERS_FILENAME,
-        help=f"Path to the JSON file for tracking processed user IDs. (Default: {default_user_data_dir / DEFAULT_PROCESSED_USERS_FILENAME})",
+        default=source_base_dir / DEFAULT_PROCESSED_USERS_FILENAME,  # Changed default
+        help=f"Path to the JSON file for tracking processed user IDs. (Default: {source_base_dir / DEFAULT_PROCESSED_USERS_FILENAME})",
     )
     parser.add_argument(
         "--session-file",
         type=Path,
-        default=default_user_data_dir / DEFAULT_SESSION_FILENAME,
-        help=f"Path to the JSON file for storing VRChat session data. (Default: {default_user_data_dir / DEFAULT_SESSION_FILENAME})",
+        default=source_base_dir / DEFAULT_SESSION_FILENAME,  # Changed default
+        help=f"Path to the JSON file for storing VRChat session data. (Default: {source_base_dir / DEFAULT_SESSION_FILENAME})",
     )
+
+    # Log file - still defaults to platformdirs location for good practice
+    default_user_log_dir = Path(platformdirs.user_log_dir(APP_NAME, APP_AUTHOR))
     parser.add_argument(
         "--log-file",
         type=Path,
@@ -103,9 +105,7 @@ def create_vrchat_api(
     auth_api = authentication_api.AuthenticationApi(api_client)
     groups_api_instance = groups_api.GroupsApi(api_client)
 
-    authenticator = VRChatAuthenticator(
-        auth_api, file_handler, session_file_path
-    )
+    authenticator = VRChatAuthenticator(auth_api, file_handler, session_file_path)
     rate_limiter = ProgressBarRateLimiter(settings.rate_limit)
     moderator = VRChatGroupModerator(
         groups_api_instance, rate_limiter, processed_user_tracker
@@ -142,7 +142,6 @@ async def run_moderation(
                 f"Unknown ban status for user {user.display_name} (ID: {user.id})"
             )
 
-    # Save processed users after moderation
     await api.moderator.processed_user_tracker.save()
 
     end_time = pendulum.now()
@@ -152,9 +151,7 @@ async def run_moderation(
 def setup_logging(log_file_path: Path):
     ensure_directory_exists(log_file_path)
     logger.remove()
-    logger.add(
-        lambda msg: tqdm.write(msg, end=""), colorize=True, level="INFO"
-    ) 
+    logger.add(lambda msg: tqdm.write(msg, end=""), colorize=True, level="INFO")
     logger.add(log_file_path, rotation="1 day", level="INFO")
 
 
@@ -187,7 +184,7 @@ async def load_users(
 
 
 async def setup_processed_user_tracker(
-    file_handler: FileHandler, processed_users_file: Path  # Modified
+    file_handler: FileHandler, processed_users_file: Path
 ) -> ProcessedUserTracker:
     ensure_directory_exists(processed_users_file)
     tracker = ProcessedUserTracker(file_handler, str(processed_users_file))
@@ -209,14 +206,14 @@ async def setup_moderation_environment(
     return users, processed_user_tracker
 
 
-
 async def main_async():
     args = parse_arguments()
 
     setup_logging(args.log_file)
     file_handler = AsyncFileHandler()
 
-    ensure_directory_exists(args.session_file)  # Ensure session dir exists
+    ensure_directory_exists(args.processed_users_file)
+    ensure_directory_exists(args.session_file)
 
     users_to_ban, processed_user_tracker = await setup_moderation_environment(
         file_handler,
@@ -234,5 +231,6 @@ async def main_async():
             "Please check your credentials in .secrets.toml (or environment variables) and ensure VRChat services are reachable."
         )
         return
+
     start_time, end_time = await run_moderation(api, users_to_ban, settings.group_id)
     log_moderation_results(start_time, end_time)
