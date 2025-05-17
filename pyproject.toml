@@ -28,7 +28,7 @@ dev = [
     "types-tqdm==4.67.0.20250513",
     "pandas-stubs==2.2.3.250308",
     "mypy-extensions==1.1.0",
-    "types-aiofiles==24.1.0.20250326",
+    "types-aiofiles==24.1.0.20250516",
 ]
 
 [tool.mypy]
