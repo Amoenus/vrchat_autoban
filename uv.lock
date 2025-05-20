@@ -422,11 +422,13 @@ dependencies = [
     { name = "pyarrow" },
 ]
 wheels = [
+    { url = "https://files.pythonhosted.org/packages/82/05/d36181a8baf4e3d8d6f578a5996109c75e5a5ee96ea86e89c036f072afb4/pylance-0.27.1-cp39-abi3-macosx_10_15_x86_64.whl", hash = "sha256:aa993f65fd67b32d45b904df2bc79b10c0c1bf4953236e7b4028ffb905300cb3", size = 34691537, upload-time = "2025-05-16T05:47:07.866Z" },
     { url = "https://files.pythonhosted.org/packages/06/73/75cba85fb292eb6f27095e3111c3c44d52f8567ef0478521e36187fc90f8/pylance-0.27.1-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:c69b81e13b7b58e0cf1f3eb46aa2918be52ce37987d4e597f2cca9e92df7b834", size = 31760495, upload-time = "2025-05-16T05:40:00.276Z" },
     { url = "https://files.pythonhosted.org/packages/0b/e4/9dedaf540e3ff286946a0cab727d04089f54acceb3a6aaf8616e67d55607/pylance-0.27.1-cp39-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a6303087be717c85d41b31f589c312b943dbbe485a173478bdacf479c493b97a", size = 35461724, upload-time = "2025-05-16T05:29:36.919Z" },
     { url = "https://files.pythonhosted.org/packages/71/c4/2e5d70a590462f3995c98d499c958008f3ecd872f343d786cd02ec7f25c8/pylance-0.27.1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c6ca40a3c7d8365ead84da548bede5e9fe9bae22df9c5e5defb61a1fc4ece13c", size = 38600398, upload-time = "2025-05-16T05:33:38.124Z" },
     { url = "https://files.pythonhosted.org/packages/40/e4/4ff35ce58d7bc5574f94ddbcab5a07c80b8d184be0b603a8734a24f193eb/pylance-0.27.1-cp39-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:e9a4145f54617b2105572646fe48786169b1233f418a0bcd59a3f474412f652a", size = 35166926, upload-time = "2025-05-16T05:30:44.819Z" },
     { url = "https://files.pythonhosted.org/packages/78/12/def065fa57b0c274a2180a2bad41b25b078eb0eb0c7825bdf7d33c907adb/pylance-0.27.1-cp39-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:39950994a4d219044814648cdb9f8d881dad8ffb54e9cf0edcaad4e39793b07d", size = 37993746, upload-time = "2025-05-16T05:33:56.441Z" },
+    { url = "https://files.pythonhosted.org/packages/ee/70/32c636baf010de5aa273a8d1969393c827972528f9a931353016dacb2e06/pylance-0.27.1-cp39-abi3-win_amd64.whl", hash = "sha256:ae3f8f5979a79569b0fa60b61628cae7d73aea9457e83341083ba8294cf64306", size = 37513569, upload-time = "2025-05-16T05:48:57.268Z" },
 ]
 
 [[package]]
@@ -623,7 +625,7 @@ requires-dist = [
     { name = "platformdirs", specifier = ">=4.3.8" },
     { name = "pydantic", specifier = "==2.11.4" },
     { name = "tqdm", specifier = "==4.67.1" },
-    { name = "vrchatapi", specifier = "==1.19.2" },
+    { name = "vrchatapi", specifier = "==1.19.3" },
 ]
 
 [package.metadata.requires-dev]
@@ -644,16 +646,16 @@ dev = [
 
 [[package]]
 name = "vrchatapi"
-version = "1.19.2"
+version = "1.19.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "python-dateutil" },
     { name = "six" },
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/79/58/213331be0a17075b7ac12b07a5fb6662919f34f2c832df7dd053b58577d8/vrchatapi-1.19.2.tar.gz", hash = "sha256:2b0801fff24554fead9cfbfa365ee05952a7c9e63e5875dcc2408d8350d868b8", size = 235674, upload-time = "2025-04-18T08:58:46.199Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/04/d5/c729f6541c735f20f146dc181792caf90ba7f452bc507040bd4fefea2337/vrchatapi-1.19.3.tar.gz", hash = "sha256:daa0f3cda28fd0fc9255d06698add4a036eda532c7f5546cfff1c62118ed9fda", size = 248834, upload-time = "2025-05-20T13:25:02.01Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/59/3b/d9549a6aeaa5cfb15f220c179fd0d197cbd12de79f73ede9f9dbbb08a6e0/vrchatapi-1.19.2-py3-none-any.whl", hash = "sha256:5e47a4340a40559ded7864d13019400e8a4bd625512f489f01f2836cadfb57f1", size = 500126, upload-time = "2025-04-18T08:58:44.834Z" },
+    { url = "https://files.pythonhosted.org/packages/a3/56/bc6c0d3517142876c0797203133c6e670fb9c20a585d3871ab68c247f556/vrchatapi-1.19.3-py3-none-any.whl", hash = "sha256:01b2c6a5a630fd22b2ae7b063bd7608ae3db378d3e599d94d01b483a841c61a0", size = 524154, upload-time = "2025-05-20T13:25:00.214Z" },
 ]
 
 [[package]]
