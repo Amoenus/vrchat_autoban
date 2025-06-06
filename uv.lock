@@ -422,11 +422,13 @@ dependencies = [
     { name = "pyarrow" },
 ]
 wheels = [
+    { url = "https://files.pythonhosted.org/packages/82/05/d36181a8baf4e3d8d6f578a5996109c75e5a5ee96ea86e89c036f072afb4/pylance-0.27.1-cp39-abi3-macosx_10_15_x86_64.whl", hash = "sha256:aa993f65fd67b32d45b904df2bc79b10c0c1bf4953236e7b4028ffb905300cb3", size = 34691537, upload-time = "2025-05-16T05:47:07.866Z" },
     { url = "https://files.pythonhosted.org/packages/06/73/75cba85fb292eb6f27095e3111c3c44d52f8567ef0478521e36187fc90f8/pylance-0.27.1-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:c69b81e13b7b58e0cf1f3eb46aa2918be52ce37987d4e597f2cca9e92df7b834", size = 31760495, upload-time = "2025-05-16T05:40:00.276Z" },
     { url = "https://files.pythonhosted.org/packages/0b/e4/9dedaf540e3ff286946a0cab727d04089f54acceb3a6aaf8616e67d55607/pylance-0.27.1-cp39-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a6303087be717c85d41b31f589c312b943dbbe485a173478bdacf479c493b97a", size = 35461724, upload-time = "2025-05-16T05:29:36.919Z" },
     { url = "https://files.pythonhosted.org/packages/71/c4/2e5d70a590462f3995c98d499c958008f3ecd872f343d786cd02ec7f25c8/pylance-0.27.1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c6ca40a3c7d8365ead84da548bede5e9fe9bae22df9c5e5defb61a1fc4ece13c", size = 38600398, upload-time = "2025-05-16T05:33:38.124Z" },
     { url = "https://files.pythonhosted.org/packages/40/e4/4ff35ce58d7bc5574f94ddbcab5a07c80b8d184be0b603a8734a24f193eb/pylance-0.27.1-cp39-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:e9a4145f54617b2105572646fe48786169b1233f418a0bcd59a3f474412f652a", size = 35166926, upload-time = "2025-05-16T05:30:44.819Z" },
     { url = "https://files.pythonhosted.org/packages/78/12/def065fa57b0c274a2180a2bad41b25b078eb0eb0c7825bdf7d33c907adb/pylance-0.27.1-cp39-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:39950994a4d219044814648cdb9f8d881dad8ffb54e9cf0edcaad4e39793b07d", size = 37993746, upload-time = "2025-05-16T05:33:56.441Z" },
+    { url = "https://files.pythonhosted.org/packages/ee/70/32c636baf010de5aa273a8d1969393c827972528f9a931353016dacb2e06/pylance-0.27.1-cp39-abi3-win_amd64.whl", hash = "sha256:ae3f8f5979a79569b0fa60b61628cae7d73aea9457e83341083ba8294cf64306", size = 37513569, upload-time = "2025-05-16T05:48:57.268Z" },
 ]
 
 [[package]]
@@ -504,11 +506,11 @@ wheels = [
 
 [[package]]
 name = "types-aiofiles"
-version = "24.1.0.20250516"
+version = "24.1.0.20250606"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/b3/13/41faafda1d85fc8afa744ee67a2d788b3ba63e5f1c7303e5d10c2d784d2d/types_aiofiles-24.1.0.20250516.tar.gz", hash = "sha256:7fd2a7f793bbe180b7b22cd4f59300fe61fdc9940b3bbc9899ffe32849b95188", size = 14304, upload-time = "2025-05-16T03:08:29.55Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/64/6e/fac4ffc896cb3faf2ac5d23747b65dd8bae1d9ee23305d1a3b12111c3989/types_aiofiles-24.1.0.20250606.tar.gz", hash = "sha256:48f9e26d2738a21e0b0f19381f713dcdb852a36727da8414b1ada145d40a18fe", size = 14364, upload-time = "2025-06-06T03:09:26.515Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/70/e7/828287ba5d1107db1093a123fe8e481eb5aab55c911f1100f28d0df80d5a/types_aiofiles-24.1.0.20250516-py3-none-any.whl", hash = "sha256:ec265994629146804b656a971c46f393ce860305834b3cacb4b8b6fb7dba7e33", size = 14253, upload-time = "2025-05-16T03:08:28.67Z" },
+    { url = "https://files.pythonhosted.org/packages/71/de/f2fa2ab8a5943898e93d8036941e05bfd1e1f377a675ee52c7c307dccb75/types_aiofiles-24.1.0.20250606-py3-none-any.whl", hash = "sha256:e568c53fb9017c80897a9aa15c74bf43b7ee90e412286ec1e0912b6e79301aee", size = 14276, upload-time = "2025-06-06T03:09:25.662Z" },
 ]
 
 [[package]]
@@ -637,7 +639,7 @@ dev = [
     { name = "pylance", specifier = "==0.27.1" },
     { name = "pylint", specifier = "==3.3.7" },
     { name = "pyright", specifier = "==1.1.400" },
-    { name = "types-aiofiles", specifier = "==24.1.0.20250516" },
+    { name = "types-aiofiles", specifier = "==24.1.0.20250606" },
     { name = "types-requests", specifier = "==2.32.0.20250515" },
     { name = "types-tqdm", specifier = "==4.67.0.20250516" },
 ]
