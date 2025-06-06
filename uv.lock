@@ -415,18 +415,20 @@ wheels = [
 
 [[package]]
 name = "pylance"
-version = "0.27.1"
+version = "0.29.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "numpy" },
     { name = "pyarrow" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/06/73/75cba85fb292eb6f27095e3111c3c44d52f8567ef0478521e36187fc90f8/pylance-0.27.1-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:c69b81e13b7b58e0cf1f3eb46aa2918be52ce37987d4e597f2cca9e92df7b834", size = 31760495, upload-time = "2025-05-16T05:40:00.276Z" },
-    { url = "https://files.pythonhosted.org/packages/0b/e4/9dedaf540e3ff286946a0cab727d04089f54acceb3a6aaf8616e67d55607/pylance-0.27.1-cp39-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a6303087be717c85d41b31f589c312b943dbbe485a173478bdacf479c493b97a", size = 35461724, upload-time = "2025-05-16T05:29:36.919Z" },
-    { url = "https://files.pythonhosted.org/packages/71/c4/2e5d70a590462f3995c98d499c958008f3ecd872f343d786cd02ec7f25c8/pylance-0.27.1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c6ca40a3c7d8365ead84da548bede5e9fe9bae22df9c5e5defb61a1fc4ece13c", size = 38600398, upload-time = "2025-05-16T05:33:38.124Z" },
-    { url = "https://files.pythonhosted.org/packages/40/e4/4ff35ce58d7bc5574f94ddbcab5a07c80b8d184be0b603a8734a24f193eb/pylance-0.27.1-cp39-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:e9a4145f54617b2105572646fe48786169b1233f418a0bcd59a3f474412f652a", size = 35166926, upload-time = "2025-05-16T05:30:44.819Z" },
-    { url = "https://files.pythonhosted.org/packages/78/12/def065fa57b0c274a2180a2bad41b25b078eb0eb0c7825bdf7d33c907adb/pylance-0.27.1-cp39-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:39950994a4d219044814648cdb9f8d881dad8ffb54e9cf0edcaad4e39793b07d", size = 37993746, upload-time = "2025-05-16T05:33:56.441Z" },
+    { url = "https://files.pythonhosted.org/packages/b6/ae/73f041239035caeb395c5ed564654d06218949e95ad3f74de34f07a3a987/pylance-0.29.0-cp39-abi3-macosx_10_15_x86_64.whl", hash = "sha256:535ef01e90c56cc357b0ed041163b7c0a4dc0e733ee64fc82cf6af51db3b1542", size = 36258733, upload-time = "2025-06-04T16:15:57.348Z" },
+    { url = "https://files.pythonhosted.org/packages/67/dc/e807c7c591fecbf94de68e931aec7b0936a60a8c9050295d2558ca753ebf/pylance-0.29.0-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:8d8ff8e6d4d200a456c30b1d02e4863b7d2a506635cac347cf6023cd046a1934", size = 33186285, upload-time = "2025-06-04T16:18:27.92Z" },
+    { url = "https://files.pythonhosted.org/packages/43/67/eada928b04c152f35c45e14ebea8614d0a391c305d8c169740a8d72baad1/pylance-0.29.0-cp39-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:67cbf4eb8e5c5f2ffc58ff47b8788e3cba1e0027e8632d24ab67fd5fbcd2206c", size = 35031578, upload-time = "2025-06-04T16:06:45.037Z" },
+    { url = "https://files.pythonhosted.org/packages/18/b4/d6e2307b626c4f87ee575e6730cd1434b2d854c23fe9b7c28cd19b916744/pylance-0.29.0-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:38c86035adaa9e0df29715659dfc7af851267dcefcfcaaebba860b0c60033f43", size = 38067298, upload-time = "2025-06-04T16:10:59.039Z" },
+    { url = "https://files.pythonhosted.org/packages/9f/04/b9b907da0e2e27239fc80e452c62ba38d7a1d84bfa789d9171f338e5d19e/pylance-0.29.0-cp39-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:e4bbfd079b0317fd979b62553132919e1e6de8930ac8837e98eb781f9e9d79ff", size = 35069334, upload-time = "2025-06-04T16:07:39.99Z" },
+    { url = "https://files.pythonhosted.org/packages/b9/98/d282a6f21069c8a805931a9284e367c9b5695037e932c3bb19437f629855/pylance-0.29.0-cp39-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:2d5e1d53f9b864a7695bbcc55d46cbeace9389ec63599242928488e2b322c043", size = 37991332, upload-time = "2025-06-04T16:10:50.477Z" },
+    { url = "https://files.pythonhosted.org/packages/4d/76/eaf7ec4897f596233e687c3dcd64c03821bd5168469ee3bf3fadf4ebaac2/pylance-0.29.0-cp39-abi3-win_amd64.whl", hash = "sha256:3bb400b4c6554b4b156777893ee6a6501b4cc37ec588c377e9daf6abfcb5974d", size = 39141088, upload-time = "2025-06-04T16:28:21.967Z" },
 ]
 
 [[package]]
@@ -634,7 +636,7 @@ dev = [
     { name = "mypy", specifier = "==1.15.0" },
     { name = "mypy-extensions", specifier = "==1.1.0" },
     { name = "pandas-stubs", specifier = "==2.2.3.250308" },
-    { name = "pylance", specifier = "==0.27.1" },
+    { name = "pylance", specifier = "==0.29.0" },
     { name = "pylint", specifier = "==3.3.7" },
     { name = "pyright", specifier = "==1.1.400" },
     { name = "types-aiofiles", specifier = "==24.1.0.20250516" },
