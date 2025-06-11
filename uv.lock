@@ -422,11 +422,13 @@ dependencies = [
     { name = "pyarrow" },
 ]
 wheels = [
+    { url = "https://files.pythonhosted.org/packages/82/05/d36181a8baf4e3d8d6f578a5996109c75e5a5ee96ea86e89c036f072afb4/pylance-0.27.1-cp39-abi3-macosx_10_15_x86_64.whl", hash = "sha256:aa993f65fd67b32d45b904df2bc79b10c0c1bf4953236e7b4028ffb905300cb3", size = 34691537, upload-time = "2025-05-16T05:47:07.866Z" },
     { url = "https://files.pythonhosted.org/packages/06/73/75cba85fb292eb6f27095e3111c3c44d52f8567ef0478521e36187fc90f8/pylance-0.27.1-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:c69b81e13b7b58e0cf1f3eb46aa2918be52ce37987d4e597f2cca9e92df7b834", size = 31760495, upload-time = "2025-05-16T05:40:00.276Z" },
     { url = "https://files.pythonhosted.org/packages/0b/e4/9dedaf540e3ff286946a0cab727d04089f54acceb3a6aaf8616e67d55607/pylance-0.27.1-cp39-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a6303087be717c85d41b31f589c312b943dbbe485a173478bdacf479c493b97a", size = 35461724, upload-time = "2025-05-16T05:29:36.919Z" },
     { url = "https://files.pythonhosted.org/packages/71/c4/2e5d70a590462f3995c98d499c958008f3ecd872f343d786cd02ec7f25c8/pylance-0.27.1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c6ca40a3c7d8365ead84da548bede5e9fe9bae22df9c5e5defb61a1fc4ece13c", size = 38600398, upload-time = "2025-05-16T05:33:38.124Z" },
     { url = "https://files.pythonhosted.org/packages/40/e4/4ff35ce58d7bc5574f94ddbcab5a07c80b8d184be0b603a8734a24f193eb/pylance-0.27.1-cp39-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:e9a4145f54617b2105572646fe48786169b1233f418a0bcd59a3f474412f652a", size = 35166926, upload-time = "2025-05-16T05:30:44.819Z" },
     { url = "https://files.pythonhosted.org/packages/78/12/def065fa57b0c274a2180a2bad41b25b078eb0eb0c7825bdf7d33c907adb/pylance-0.27.1-cp39-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:39950994a4d219044814648cdb9f8d881dad8ffb54e9cf0edcaad4e39793b07d", size = 37993746, upload-time = "2025-05-16T05:33:56.441Z" },
+    { url = "https://files.pythonhosted.org/packages/ee/70/32c636baf010de5aa273a8d1969393c827972528f9a931353016dacb2e06/pylance-0.27.1-cp39-abi3-win_amd64.whl", hash = "sha256:ae3f8f5979a79569b0fa60b61628cae7d73aea9457e83341083ba8294cf64306", size = 37513569, upload-time = "2025-05-16T05:48:57.268Z" },
 ]
 
 [[package]]
@@ -522,14 +524,14 @@ wheels = [
 
 [[package]]
 name = "types-requests"
-version = "2.32.0.20250515"
+version = "2.32.4.20250611"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/06/c1/cdc4f9b8cfd9130fbe6276db574f114541f4231fcc6fb29648289e6e3390/types_requests-2.32.0.20250515.tar.gz", hash = "sha256:09c8b63c11318cb2460813871aaa48b671002e59fda67ca909e9883777787581", size = 23012, upload-time = "2025-05-15T03:04:31.817Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6d/7f/73b3a04a53b0fd2a911d4ec517940ecd6600630b559e4505cc7b68beb5a0/types_requests-2.32.4.20250611.tar.gz", hash = "sha256:741c8777ed6425830bf51e54d6abe245f79b4dcb9019f1622b773463946bf826", size = 23118, upload-time = "2025-06-11T03:11:41.272Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/fe/0f/68a997c73a129287785f418c1ebb6004f81e46b53b3caba88c0e03fcd04a/types_requests-2.32.0.20250515-py3-none-any.whl", hash = "sha256:f8eba93b3a892beee32643ff836993f15a785816acca21ea0ffa006f05ef0fb2", size = 20635, upload-time = "2025-05-15T03:04:30.5Z" },
+    { url = "https://files.pythonhosted.org/packages/3d/ea/0be9258c5a4fa1ba2300111aa5a0767ee6d18eb3fd20e91616c12082284d/types_requests-2.32.4.20250611-py3-none-any.whl", hash = "sha256:ad2fe5d3b0cb3c2c902c8815a70e7fb2302c4b8c1f77bdcd738192cdb3878072", size = 20643, upload-time = "2025-06-11T03:11:40.186Z" },
 ]
 
 [[package]]
@@ -638,7 +640,7 @@ dev = [
     { name = "pylint", specifier = "==3.3.7" },
     { name = "pyright", specifier = "==1.1.400" },
     { name = "types-aiofiles", specifier = "==24.1.0.20250516" },
-    { name = "types-requests", specifier = "==2.32.0.20250515" },
+    { name = "types-requests", specifier = "==2.32.4.20250611" },
     { name = "types-tqdm", specifier = "==4.67.0.20250516" },
 ]
 
