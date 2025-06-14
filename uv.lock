@@ -349,7 +349,7 @@ wheels = [
 
 [[package]]
 name = "pydantic"
-version = "2.11.4"
+version = "2.11.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "annotated-types" },
@@ -357,9 +357,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "typing-inspection" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/77/ab/5250d56ad03884ab5efd07f734203943c8a8ab40d551e208af81d0257bf2/pydantic-2.11.4.tar.gz", hash = "sha256:32738d19d63a226a52eed76645a98ee07c1f410ee41d93b4afbfa85ed8111c2d", size = 786540, upload-time = "2025-04-29T20:38:55.02Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/00/dd/4325abf92c39ba8623b5af936ddb36ffcfe0beae70405d456ab1fb2f5b8c/pydantic-2.11.7.tar.gz", hash = "sha256:d989c3c6cb79469287b1569f7447a17848c998458d49ebe294e975b9baf0f0db", size = 788350, upload-time = "2025-06-14T08:33:17.137Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e7/12/46b65f3534d099349e38ef6ec98b1a5a81f42536d17e0ba382c28c67ba67/pydantic-2.11.4-py3-none-any.whl", hash = "sha256:d9615eaa9ac5a063471da949c8fc16376a84afb5024688b3ff885693506764eb", size = 443900, upload-time = "2025-04-29T20:38:52.724Z" },
+    { url = "https://files.pythonhosted.org/packages/6a/c0/ec2b1c8712ca690e5d61979dee872603e92b8a32f94cc1b72d53beab008a/pydantic-2.11.7-py3-none-any.whl", hash = "sha256:dde5df002701f6de26248661f6835bbe296a47bf73990135c7d07ce741b9623b", size = 444782, upload-time = "2025-06-14T08:33:14.905Z" },
 ]
 
 [[package]]
@@ -422,11 +422,13 @@ dependencies = [
     { name = "pyarrow" },
 ]
 wheels = [
+    { url = "https://files.pythonhosted.org/packages/82/05/d36181a8baf4e3d8d6f578a5996109c75e5a5ee96ea86e89c036f072afb4/pylance-0.27.1-cp39-abi3-macosx_10_15_x86_64.whl", hash = "sha256:aa993f65fd67b32d45b904df2bc79b10c0c1bf4953236e7b4028ffb905300cb3", size = 34691537, upload-time = "2025-05-16T05:47:07.866Z" },
     { url = "https://files.pythonhosted.org/packages/06/73/75cba85fb292eb6f27095e3111c3c44d52f8567ef0478521e36187fc90f8/pylance-0.27.1-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:c69b81e13b7b58e0cf1f3eb46aa2918be52ce37987d4e597f2cca9e92df7b834", size = 31760495, upload-time = "2025-05-16T05:40:00.276Z" },
     { url = "https://files.pythonhosted.org/packages/0b/e4/9dedaf540e3ff286946a0cab727d04089f54acceb3a6aaf8616e67d55607/pylance-0.27.1-cp39-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a6303087be717c85d41b31f589c312b943dbbe485a173478bdacf479c493b97a", size = 35461724, upload-time = "2025-05-16T05:29:36.919Z" },
     { url = "https://files.pythonhosted.org/packages/71/c4/2e5d70a590462f3995c98d499c958008f3ecd872f343d786cd02ec7f25c8/pylance-0.27.1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c6ca40a3c7d8365ead84da548bede5e9fe9bae22df9c5e5defb61a1fc4ece13c", size = 38600398, upload-time = "2025-05-16T05:33:38.124Z" },
     { url = "https://files.pythonhosted.org/packages/40/e4/4ff35ce58d7bc5574f94ddbcab5a07c80b8d184be0b603a8734a24f193eb/pylance-0.27.1-cp39-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:e9a4145f54617b2105572646fe48786169b1233f418a0bcd59a3f474412f652a", size = 35166926, upload-time = "2025-05-16T05:30:44.819Z" },
     { url = "https://files.pythonhosted.org/packages/78/12/def065fa57b0c274a2180a2bad41b25b078eb0eb0c7825bdf7d33c907adb/pylance-0.27.1-cp39-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:39950994a4d219044814648cdb9f8d881dad8ffb54e9cf0edcaad4e39793b07d", size = 37993746, upload-time = "2025-05-16T05:33:56.441Z" },
+    { url = "https://files.pythonhosted.org/packages/ee/70/32c636baf010de5aa273a8d1969393c827972528f9a931353016dacb2e06/pylance-0.27.1-cp39-abi3-win_amd64.whl", hash = "sha256:ae3f8f5979a79569b0fa60b61628cae7d73aea9457e83341083ba8294cf64306", size = 37513569, upload-time = "2025-05-16T05:48:57.268Z" },
 ]
 
 [[package]]
@@ -621,7 +623,7 @@ requires-dist = [
     { name = "loguru", specifier = "==0.7.3" },
     { name = "pendulum", specifier = "==3.1.0" },
     { name = "platformdirs", specifier = ">=4.3.8" },
-    { name = "pydantic", specifier = "==2.11.4" },
+    { name = "pydantic", specifier = "==2.11.7" },
     { name = "tqdm", specifier = "==4.67.1" },
     { name = "vrchatapi", specifier = "==1.19.2" },
 ]
